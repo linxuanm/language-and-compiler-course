@@ -2,6 +2,40 @@
 
 This course provides an introductory insight into how programming languages and compilers work. Throughout the homework in this course, you will create a simple, dynamic language with a virtual runtime.
 
+Due to the short length of this course, the main focus will be on understanding basic concepts such as compilation and runtime, creating a runtime VM, and implementing simple parsing algorithms. Type handling and inferences, as well as optimizations, will not be covered, but are encouraged if you have spare time.
+
+## Source Language
+
+The source language is a type-free language with C-like syntax:
+
+```
+non_zero = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
+digit = "0" | non_zero;
+alpha = "A" | ... | "Z" | "a" | ... | "z";
+
+identifier = (alpha | "_"), {alpha | digit | "_"};
+int = ["-"], ("0" | non_zero, {digit});
+bool = "TRUE" | "FALSE";
+string = '"', {any_char}, '"';
+
+decl = "decl", identifier, {",", identifier};
+```
+
+Here is some sample code:
+
+```
+decl my_global_var, other_var
+
+add_func(decl a, decl b) {
+    return a + b;
+}
+
+main() {
+    my_global_var = 10;
+    return NONE;
+}
+```
+
 ## Virtual Machine
 
 The runtime of our language consists of a simple stack-based virtual machine with a custom instruction set.
@@ -35,6 +69,7 @@ great: pops <a> and <b> off the stack and push true if <a> is greater than <b>, 
 
 jmp <code_index>: jumps to code <code_index>
 cjmp <code_index>: pops a value off the stack, if the value is true, jumps to code <code_index>
+call <func_name>: invokes the function <func_name>
 ```
 
 ### Global Variable Table
@@ -75,13 +110,13 @@ Each bytecode file is structured as such (indentation insensitive):
 <global_var_count>
 <function_count>
 
-my_function_a
+my_function_a <local_var_count>
     code
     code
     code
 :my_function_a
 
-my_function_b
+my_function_b <local_var_count>
     code
     code
     code
