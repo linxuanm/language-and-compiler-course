@@ -17,11 +17,11 @@ The virtual machine keeps track of the following structures:
 This virtual machine uses a simple custom instruction set:
 
 ```
-gload <glob_var_index>: pushes global variable at index <glob_var_index> onto the stack
-gstore <glob_var_index>: pops the top of the stack to the global variable at index <glob_var_index>
+gload <glob_var_index>: pushes global variable <glob_var_index> onto the stack
+gstore <glob_var_index>: pops the top of the stack into global variable <glob_var_index>
 
-lload <local_var_index>: pushes the local variable at index <local_var_index> onto the stack
-lstore <local_var_index>: pops the top of the stack to the local variable at index <local_var_index>
+lload <local_var_index>: pushes local variable <local_var_index> onto the stack
+lstore <local_var_index>: pops the top of the stack into local variable <local_var_index>
 
 add: pops two values off the stack, and pushes their sum onto the stack
 subtract: pops <a> and <b> (in that order) off the stack, and pushes <b> - <a> onto the stack
