@@ -7,26 +7,26 @@ This course provides an introductory insight into how programming languages and 
 The runtime of our language consists of a simple stack-based virtual machine with a custom instruction set.
 
 The virtual machine keeps track of the following structures:
-- [Global Variable Table](#GlobalVariableTable)
-- [Local Frame](#LocalFrame)
-- [Bytecode Structure](#BytecodeFileFormat)
-- [Execution Stack](#ExecutionStack)
+- [Global Variable Table](#global-variable-table)
+- [Local Frame](#local-frame)
+- [Bytecode Structure](#bytecode-file-format)
+- [Execution Stack](#execution-stack)
 
 ### Bytecode Instruction Set
 
 This virtual machine uses a simple custom instruction set:
 
 ```
-gload <glob_var_index>: pushes the value of the global variable at index <glob_var_index> onto the stack
-gstore <glob_var_index>: pops the value at the top of the stack to the global variable at index <glob_var_index>
+gload <glob_var_index>: pushes global variable at index <glob_var_index> onto the stack
+gstore <glob_var_index>: pops the top of the stack to the global variable at index <glob_var_index>
 
-lload <local_var_index>: pushes the value of the local variable at index <local_var_index> onto the stack
-lstore <local_var_index>: pops the value at the top of the stack to the local variable at index <local_var_index>
+lload <local_var_index>: pushes the local variable at index <local_var_index> onto the stack
+lstore <local_var_index>: pops the top of the stack to the local variable at index <local_var_index>
 
-add: pops two values off the stack, and pushes their sum back onto the stack
-subtract: pops <a> and <b> (in that order) off the stack, and pushes <b> - <a> back onto the stack
-mul: pops two values off the stack, and pushes their product back onto the stack
-div: pops <a> and <b> (in that order) off the stack, and pushes floor(<b> / <a>) back onto the stack
+add: pops two values off the stack, and pushes their sum onto the stack
+subtract: pops <a> and <b> (in that order) off the stack, and pushes <b> - <a> onto the stack
+mul: pops two values off the stack, and pushes their product onto the stack
+div: pops <a> and <b> (in that order) off the stack, and pushes floor(<b> / <a>) onto the stack
 ```
 
 ### Global Variable Table
