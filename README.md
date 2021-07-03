@@ -27,6 +27,14 @@ add: pops two values off the stack, and pushes their sum onto the stack
 subtract: pops <a> and <b> (in that order) off the stack, and pushes <b> - <a> onto the stack
 mul: pops two values off the stack, and pushes their product onto the stack
 div: pops <a> and <b> (in that order) off the stack, and pushes floor(<b> / <a>) onto the stack
+
+equal: pops two values off the stack and push true if then are equal, else false
+nequal: pops two values off the stack and push true if then are not equal, else false
+less: pops <a> and <b> off the stack and push true if <a> is less than <b>, else false
+great: pops <a> and <b> off the stack and push true if <a> is greater than <b>, else false
+
+jmp <code_index>: jumps to code <code_index>
+cjmp <code_index>: pops a value off the stack, if the value is true, jumps to code <code_index>
 ```
 
 ### Global Variable Table
