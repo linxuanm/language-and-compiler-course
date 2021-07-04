@@ -16,6 +16,7 @@ alpha = "A" | ... | "Z" | "a" | ... | "z";
 identifier = (alpha | "_"), {alpha | digit | "_"};
 int = ["-"], ("0" | non_zero, {digit});
 bool = "TRUE" | "FALSE";
+none = "NONE";
 string = '"', {any_char}, '"';
 
 decl = "decl", identifier, {",", identifier};
@@ -45,6 +46,7 @@ The virtual machine keeps track of the following structures:
 - [Local Frame](#local-frame)
 - [Bytecode Structure](#bytecode-file-format)
 - [Execution Stack](#execution-stack)
+- [Native Functions](#native-functions)
 
 ### Bytecode Instruction Set
 
@@ -68,8 +70,9 @@ less: pops <a> and <b> off the stack and push true if <a> is less than <b>, else
 great: pops <a> and <b> off the stack and push true if <a> is greater than <b>, else false
 
 jmp <code_index>: jumps to code <code_index>
-cjmp <code_index>: pops a value off the stack, if the value is true, jumps to code <code_index>
+cjmp <code_index>: pops a value off the stack; if the value is true, jumps to code <code_index>
 call <func_name>: invokes the function <func_name>
+ncall <native_func_index>: invokes the native function <native_func_index>
 ```
 
 ### Global Variable Table
@@ -140,3 +143,7 @@ push 2        // [13, 7, 2]
 subtract      // [13, 5]
 mul           // [65]
 ```
+
+### Native Functions
+
+To allow interaction with the low level functionalities, the virtual machine exposes certain native functions, such as basic IO. The native function table is similar to the various variable tables. Each native function behaves similarily to a normal function; parameters are popped of the stack in reverse order, and the return value is pushed onto the stack when the function returns.
