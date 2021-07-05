@@ -11,6 +11,6 @@ class TokenType(enum.Enum):
     WHITESPACE = 'whitespace'
 
 
-def load_source_file(path: str):
+def load_source_file(path: str) -> str:
     with open(path, 'r') as f:
         return f.read()

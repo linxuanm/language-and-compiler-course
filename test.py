@@ -1,14 +1,32 @@
 # THIS FILE IS FOR TESTING YOUR CODE; DO NOT EDIT ITS CONTENT
+#
+# The testing of each step in the compilation process returns
+# the processed content in the form of a list for simplicity.
 
 import os
 import sys
 
-import basics
-import autograd
-import interpreter
+lexer = __import__('1-lexer')
+parser = __import__('2-parser')
+semantic = __import__('3-semantic-analysis')
+codegen = __import__('4-code-generation')
+machine = __import__('5-virtual-machine')
 
 
 exit_code = 0
+
+CODE_DIR = 'test_code'
+CODE_FILES = {
+    'global_decl.code': {
+        'tokens': [
+
+        ]
+    }
+}
+
+
+def get_file_value(all_files, key):
+    pass
 
 
 def supports_color():
@@ -42,6 +60,14 @@ def assert_equal(output, expected, meta=''):
         bad(f'Test Failed{meta}: Expected {expected}, instead got {output}')
         abort()
 
+
+def test_lexer(files, expected):
+    real_path = [os.path.join(CODE_DIR, i) for i in files]
+    code_sources = [lexer.load_source_file(i) for i in files]
+    tokens = [lexer.lex(i) for i in code_sources]
+
+
+#tokens = test_lexer()
 
 if exit_code == 0:
     good('ALL TEST PASSED')
