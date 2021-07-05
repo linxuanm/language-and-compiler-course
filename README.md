@@ -9,6 +9,7 @@ Due to the short length of this course, the main focus will be on understanding 
 The source language is a type-free language with C-like syntax:
 
 ```
+(* Tokens *)
 non_zero = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
 digit = "0" | non_zero;
 alpha = "A" | ... | "Z" | "a" | ... | "z";
@@ -18,8 +19,17 @@ int = ["-"], ("0" | non_zero, {digit});
 bool = "TRUE" | "FALSE";
 none = "NONE";
 string = '"', {any_char}, '"';
+literal = string | none | int | bool;
+
+(* Syntax *)
+exp = "(", exp, ")";
 
 decl = "decl", identifier, {",", identifier};
+assign = identifier, "=", identifier;
+return = "return", exp;
+
+func_param = "(", [identifier, {",", identifier}], ")";
+func_decl = identifier, func_param, "{", statements, "}";
 ```
 
 Here is some sample code:
@@ -27,7 +37,7 @@ Here is some sample code:
 ```
 decl my_global_var, other_var
 
-add_func(decl a, decl b) {
+add_func(a, b) {
     return a + b;
 }
 
@@ -36,6 +46,29 @@ main() {
     return NONE;
 }
 ```
+
+### Types
+
+Our source language has 4 value types:
+- `int`: an integer (the only numeric type in our language)
+- `string`: a sequence of characters
+- `bool`: a value of either `TRUE` or `FALSE`
+- `NONE`: a placeholder value denoting the absence of a value
+
+## Lexer
+
+The lexer is responsible for tokenizing a piece of source language into a list of tokens to make parsing easier.
+
+Our language has 5 token types:
+- `KEYWORD`: reserved words used in the syntax' construct (`if`, `while`, `return`, etc)
+- `IDENTIFIER`: names of values/functions defined by the programmer (`my_var`, `foo`, etc)
+- `LITERAL`: literal representation of values (`76`, `NONE`, `"hello world"`, `FALSE`, etc)
+- `SYMBOL`: special symbols used in the syntax' construct (`,`, `(`, `;`, `{`, etc)
+- `OPERATOR`: symbols used for processing purposes (`=`, `+`, `<`, etc)
+
+Some notes:
+- An `IDENTIFIER` cannot take the name of an existing `KEYWORD` (raises a SyntaxError)
+- `SYMBOL` is for syntax structure only, which is why `=` classifies as an `OPERATOR`
 
 ## Virtual Machine
 
