@@ -60,12 +60,13 @@ Our source language has 4 value types:
 
 The lexer is responsible for tokenizing a piece of source language into a list of tokens to make parsing easier.
 
-Our language has 5 token types:
+Our language has 6 token types:
 - `KEYWORD`: reserved words used in the syntax' construct (`if`, `while`, `return`, etc)
 - `IDENTIFIER`: names of values/functions defined by the programmer (`my_var`, `foo`, etc)
 - `LITERAL`: literal representation of values (`76`, `NONE`, `"hello world"`, `FALSE`, etc)
 - `SYMBOL`: special symbols used in the syntax' construct (`,`, `(`, `;`, `{`, etc)
 - `OPERATOR`: symbols used for processing purposes (`=`, `+`, `<`, etc)
+- `WHITESPACE`: a sequence of whitespace characters (` `, `\n`, `\t`)
 
 Some notes:
 - An `IDENTIFIER` cannot take the name of an existing `KEYWORD` (raises a SyntaxError)

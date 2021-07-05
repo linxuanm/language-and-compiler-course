@@ -8,6 +8,7 @@ class TokenType(enum.Enum):
     LITERAL = 'literal'
     SYMBOL = 'symbol'
     OPERATOR = 'operator'
+    WHITESPACE = 'whitespace'
 
 
 def load_source_file(path: str):
