@@ -1,4 +1,14 @@
-entrypoints Stmt;
+entrypoints Program;
+
+Prog. Program ::= [Decl];
+
+separator Iden ",";
+separator Exp ",";
+terminator Stmt "";
+terminator Decl "";
+
+DVar. Decl ::= "decl" [Iden] ";";
+DFun. Decl ::= Iden "(" [Iden] ")" "{" [Stmt] "}";
 
 token Iden ((letter | '_') (letter | digit | '_')*);
 
@@ -12,20 +22,17 @@ ETru. Exp2 ::= "TRUE";
 EFal. Exp2 ::= "FALSE";
 ENon. Exp2 ::= "NONE";
 EIde. Exp2 ::= Iden;
+ECal. Exp2 ::= Iden "(" [Exp] ")";
 
 coercions Exp 3;
 
-Id. IdList ::= Iden;
-(:[]). [IdList] ::= IdList;
-(:). [IdList] ::= IdList "," [IdList];
-
-SDec. Stmt ::= "decl" [IdList] ";";
+SDec. Stmt ::= "decl" [Iden] ";";
 SAsn. Stmt ::= Iden "=" Exp ";";
 SRet. Stmt ::= "return" Exp ";";
+SBre. Stmt ::= "break" ";";
+SCon. Stmt ::= "continue" ";";
 
 SIfn. Stmt ::= "if" "(" Exp ")" "{" [Stmt] "}";
 SIfe. Stmt ::= "if" "(" Exp ")" "{" [Stmt] "}" "else" "{" [Stmt] "}";
 SWhi. Stmt ::= "while" "(" Exp ")" "{" [Stmt] "}";
-
-[]. [Stmt] ::= ;
-(:). [Stmt] ::= Stmt [Stmt];
+SExp. Stmt ::= Exp ";";
