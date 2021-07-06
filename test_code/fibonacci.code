@@ -1,0 +1,16 @@
+main() {
+    decl a, b;
+    a = 0;
+    b = 1;
+
+    while (b < 1000) {
+        a = a + b;
+        b = a - b;
+        a = a - b;
+        b = a + b;
+
+        print(b);
+    }
+
+    print("DONE");
+}
