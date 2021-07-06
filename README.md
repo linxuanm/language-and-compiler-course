@@ -18,7 +18,7 @@ symbol = "," | ";" | "(" | ")" | "{" | "}";
 
 keyword = "if" | "else" | "while" | "return" | "break" | "continue" | "decl";
 identifier = (alpha | "_"), {alpha | digit | "_"};
-int = ["-"], ("0" | non_zero, {digit});
+int = "0" | non_zero, {digit};
 bool = "TRUE" | "FALSE";
 none = "NONE";
 string = '"', {any_char}, '"';
@@ -27,12 +27,14 @@ literal = string | none | int | bool;
 (* Syntax *)
 exp = "(", exp, ")";
 
-decl = "decl", identifier, {",", identifier};
-assign = identifier, "=", identifier;
-return = "return", exp;
+id_list = identifier, {",", identifier};
+func_decl = identifier, "(", [id_list], ")", "{", statements, "}";
 
-func_param = "(", [identifier, {",", identifier}], ")";
-func_decl = identifier, func_param, "{", statements, "}";
+decl = "decl", id_list, ";";
+assign = identifier, "=", exp, ";";
+return = "return", exp, ";";
+if = "if", "(", exp, ")", "{", statements, "}", ["else", "{", statements, "}"];
+while = "while", "(", exp, ")", "{", "statements", "}";
 ```
 
 Here is some sample code:

@@ -1,0 +1,31 @@
+entrypoints Stmt;
+
+token Iden ((letter | '_') (letter | digit | '_')*);
+
+EAdd. Exp ::= Exp "+" Exp1;
+ESub. Exp ::= Exp "+" Exp1;
+EMul. Exp1 ::= Exp1 "+" Exp2;
+EDiv. Exp1 ::= Exp1 "+" Exp2;
+EInt. Exp2 ::= Integer;
+EStr. Exp2 ::= String;
+ETru. Exp2 ::= "TRUE";
+EFal. Exp2 ::= "FALSE";
+ENon. Exp2 ::= "NONE";
+EIde. Exp2 ::= Iden;
+
+coercions Exp 3;
+
+Id. IdList ::= Iden;
+(:[]). [IdList] ::= IdList;
+(:). [IdList] ::= IdList "," [IdList];
+
+SDec. Stmt ::= "decl" [IdList] ";";
+SAsn. Stmt ::= Iden "=" Exp ";";
+SRet. Stmt ::= "return" Exp ";";
+
+SIfn. Stmt ::= "if" "(" Exp ")" "{" [Stmt] "}";
+SIfe. Stmt ::= "if" "(" Exp ")" "{" [Stmt] "}" "else" "{" [Stmt] "}";
+SWhi. Stmt ::= "while" "(" Exp ")" "{" [Stmt] "}";
+
+[]. [Stmt] ::= ;
+(:). [Stmt] ::= Stmt [Stmt];
