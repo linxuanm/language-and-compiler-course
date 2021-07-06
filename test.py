@@ -25,8 +25,8 @@ CODE_FILES = {
 }
 
 
-def get_file_value(all_files, key):
-    pass
+def get_file_values(all_files, key):
+    return {k: v[key] for k, v in all_files.iteritems()}
 
 
 def supports_color():
@@ -61,13 +61,16 @@ def assert_equal(output, expected, meta=''):
         abort()
 
 
-def test_lexer(files, expected):
-    real_path = [os.path.join(CODE_DIR, i) for i in files]
-    code_sources = [lexer.load_source_file(i) for i in files]
-    tokens = [lexer.lex(i) for i in code_sources]
+def test_lexer(file_ref):
+    code_sources = {
+        i: lexer.load_source_file(os.path.join(CODE_DIR, i)) for i in file_ref
+    }
+    tokens = {i: lexer.lex(i) for i in code_sources}
+
+    print(tokens)
 
 
-#tokens = test_lexer()
+tokens = test_lexer(CODE_FILES)
 
 if exit_code == 0:
     good('ALL TEST PASSED')
