@@ -12,21 +12,63 @@ semantic = __import__('3-semantic-analysis')
 codegen = __import__('4-code-generation')
 machine = __import__('5-virtual-machine')
 
+TokenType = lexer.TokenType
 
-exit_code = 0
 
 CODE_DIR = 'test_code'
 CODE_FILES = {
     'global_decl.code': {
         'tokens': [
-
+            ('decl', TokenType.KEYWORD),
+            ('a', TokenType.IDENTIFIER),
+            (',', TokenType.SYMBOL),
+            ('b_variable', TokenType.IDENTIFIER),
+            (',', TokenType.SYMBOL),
+            ('c', TokenType.IDENTIFIER),
+            (',', TokenType.SYMBOL),
+            ('d', TokenType.IDENTIFIER),
+            (',', TokenType.SYMBOL),
+            ('e', TokenType.IDENTIFIER),
+            (',', TokenType.SYMBOL),
+            ('f', TokenType.IDENTIFIER),
+            (',', TokenType.SYMBOL),
+            ('ashduiahsgjdha', TokenType.IDENTIFIER),
+            (',', TokenType.SYMBOL),
+            ('sjbdjshdbf', TokenType.IDENTIFIER),
+            (',', TokenType.SYMBOL),
+            ('ASgdjhashjJAJHHKAS128731_', TokenType.IDENTIFIER),
+            (';', TokenType.SYMBOL),
+            ('decl', TokenType.KEYWORD),
+            ('mcn', TokenType.IDENTIFIER),
+            (';', TokenType.SYMBOL),
+            ('decl', TokenType.KEYWORD),
+            ('hndf', TokenType.IDENTIFIER),
+            (';', TokenType.SYMBOL),
+            ('decl', TokenType.KEYWORD),
+            ('ajksdkfhsdjk', TokenType.IDENTIFIER),
+            (';', TokenType.SYMBOL),
+            ('decl', TokenType.KEYWORD),
+            ('A', TokenType.IDENTIFIER),
+            (',', TokenType.SYMBOL),
+            ('B', TokenType.IDENTIFIER),
+            (',', TokenType.SYMBOL),
+            ('C', TokenType.IDENTIFIER),
+            (',', TokenType.SYMBOL),
+            ('D', TokenType.IDENTIFIER),
+            (',', TokenType.SYMBOL),
+            ('E', TokenType.IDENTIFIER),
+            (',', TokenType.SYMBOL),
+            ('F', TokenType.IDENTIFIER),
+            (',', TokenType.SYMBOL),
+            ('G', TokenType.IDENTIFIER),
+            (';', TokenType.SYMBOL)
         ]
     }
 }
 
 
 def get_file_values(all_files, key):
-    return {k: v[key] for k, v in all_files.iteritems()}
+    return {k: v[key] for k, v in all_files.items()}
 
 
 def supports_color():
@@ -49,31 +91,39 @@ failure = log_func('1;91')
 
 
 def abort():
-    global exit_code
-    exit_code = 1
+    print()
+    failure('TEST FAILED')
+    sys.exit(1)
 
 
 def assert_equal(output, expected, meta=''):
     if output == expected:
-        good(f'Test Passed{meta}: {output}')
+        good(f'Test Passed: {meta}')
     else:
-        bad(f'Test Failed{meta}: Expected {expected}, instead got {output}')
+        bad('Test Failed:')
+        print()
+        bad(f'Expected {expected}')
+        print()
+        bad(f'Instead got {output}')
         abort()
 
 
 def test_lexer(file_ref):
+    bold('Testing Lexer')
+    print()
+
+    ref_tokens = get_file_values(file_ref, 'tokens')
     code_sources = {
         i: lexer.load_source_file(os.path.join(CODE_DIR, i)) for i in file_ref
     }
-    tokens = {i: lexer.lex(i) for i in code_sources}
+    tokens = {k: lexer.lex(v) for k, v in code_sources.items()}
 
-    print(tokens)
+    for i in tokens:
+        assert_equal(tokens[i], ref_tokens[i], i)
+
+    print()
 
 
 tokens = test_lexer(CODE_FILES)
 
-if exit_code == 0:
-    good('ALL TEST PASSED')
-else:
-    failure('TEST FAILED')
-    sys.exit(1)
+good('ALL TEST PASSED')

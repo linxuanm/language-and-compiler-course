@@ -13,8 +13,9 @@ The source language is a type-free language with C-like syntax:
 non_zero = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
 digit = "0" | non_zero;
 alpha = "A" | ... | "Z" | "a" | ... | "z";
-operator = "=" | "<" | ">" | "<=" | ">=" | "+" | "-" | "*" | "/";
+operator = "=" | "<" | ">" | "==" | "<=" | ">=" | "+" | "-" | "*" | "/";
 
+keyword = "if" | "else" | "while" | "return" | "break" | "continue" | "decl";
 identifier = (alpha | "_"), {alpha | digit | "_"};
 int = ["-"], ("0" | non_zero, {digit});
 bool = "TRUE" | "FALSE";
