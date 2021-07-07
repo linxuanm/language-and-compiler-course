@@ -12,6 +12,12 @@ DFun. Decl ::= Iden "(" [Iden] ")" "{" [Stmt] "}";
 
 token Iden ((letter | '_') (letter | digit | '_')*);
 
+LInt. Lit ::= Integer;
+LStr. Lit ::= String;
+LTru. Lit ::= "TRUE";
+LFal. Lit ::= "FALSE";
+LNon. Lit ::= "NONE";
+
 EOr. Exp ::= Exp "||" Exp1;
 EAnd. Exp1 ::= Exp1 "&&" Exp2;
 EEqu. Exp2 ::= Exp2 "==" Exp3;
@@ -23,11 +29,7 @@ EAdd. Exp3 ::= Exp3 "+" Exp4;
 ESub. Exp3 ::= Exp3 "-" Exp4;
 EMul. Exp4 ::= Exp4 "*" Exp5;
 EDiv. Exp4 ::= Exp4 "/" Exp5;
-EInt. Exp5 ::= Integer;
-EStr. Exp5 ::= String;
-ETru. Exp5 ::= "TRUE";
-EFal. Exp5 ::= "FALSE";
-ENon. Exp5 ::= "NONE";
+ELit. Exp5 ::= Lit;
 EIde. Exp5 ::= Iden;
 ECal. Exp5 ::= Iden "(" [Exp] ")";
 

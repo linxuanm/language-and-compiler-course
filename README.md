@@ -13,28 +13,24 @@ The source language is a type-free language with C-like syntax:
 non_zero = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
 digit = "0" | non_zero;
 alpha = "A" | ... | "Z" | "a" | ... | "z";
-operator = "=" | "<" | ">" | "==" | "<=" | ">=" | "+" | "-" | "*" | "/";
+operator = "=" | "<" | ">" | "==" | "<=" | ">=" | "+" | "-" | "*" | "/" | "&&" | "||";
 symbol = "," | ";" | "(" | ")" | "{" | "}";
 
 keyword = "if" | "else" | "while" | "return" | "break" | "continue" | "decl";
-identifier = (alpha | "_"), {alpha | digit | "_"};
-int = "0" | non_zero, {digit};
+identifier = ((alpha | "_"), {alpha | digit | "_"}) - keyword;
+int = digit {digit};
 bool = "TRUE" | "FALSE";
 none = "NONE";
-string = '"', {any_char}, '"';
+string = '"', {any_char - '"'}, '"';
 literal = string | none | int | bool;
 
 (* Syntax *)
-exp = "(", exp, ")";
-
-id_list = identifier, {",", identifier};
-func_decl = identifier, "(", [id_list], ")", "{", statements, "}";
-
-decl = "decl", id_list, ";";
+iden_list = [identifier, {",", identifier}];
+declare = "decl", iden_list, ";";
 assign = identifier, "=", exp, ";";
 return = "return", exp, ";";
-if = "if", "(", exp, ")", "{", statements, "}", ["else", "{", statements, "}"];
-while = "while", "(", exp, ")", "{", "statements", "}";
+break = "break", ";";
+continue = "continue", ";";
 ```
 
 Here is some sample code:
