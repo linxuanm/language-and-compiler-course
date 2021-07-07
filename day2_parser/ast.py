@@ -1,3 +1,7 @@
+from day3_semantic_analysis import ExecutionContext
+from day4_code_generation import CodeGenContext
+
+
 __all__ = [
     'Exp',
     'Declare',
@@ -17,7 +21,40 @@ class AST:
     The base class of all abstract syntax tree nodes.
     """
 
-    def to_analysis_tree(context):
+    def analysis_pass(self, context: ExecutionContext):
+        """
+        The analysis pass whether this node contains valid code.
+        Performs semantic validation according to the given checking context.
+
+        Other analytic operations, such as optimization, are also executed
+        here.
+
+        Throws an according error if the validation does not pass.
+        """
+
+        raise NotImplementedError
+
+
+    def code_length(self):
+        """
+        Returns the length of the generated code of this node (recursive).
+
+        Used for determining the position of jumps prior to the actual
+        code generation.
+        """
+
+        raise NotImplementedError
+
+
+    def generate_code(self, context: CodeGenContext) -> [str]:
+        """
+        Generates the code for this node according to the surronding context.
+        Returns the list of bytecode for this node.
+
+        In the case of Exp, generate the necessary code that is needed to
+        have the resulting value on top of the stack.
+        """
+
         raise NotImplementedError
 
 
@@ -47,7 +84,7 @@ class Declare(Stmt, Decl):
     Represents a declare statement (e.g. 'decl a, b;').
     """
 
-    def __init__(self, vars: str):
+    def __init__(self, vars: [str]):
         self.vars = vars
 
 
