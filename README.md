@@ -26,11 +26,22 @@ literal = string | none | int | bool;
 
 (* Syntax *)
 iden_list = [identifier, {",", identifier}];
+stmt_list = {stmt};
+
 declare = "decl", iden_list, ";";
 assign = identifier, "=", exp, ";";
 return = "return", exp, ";";
 break = "break", ";";
 continue = "continue", ";";
+
+if = "if", "(", exp, ")", "{", stmt_list, "}", {"else", "{", stmt_list, "}"};
+while = "while", "(", exp, ")", "{", stmt_list, "}";
+
+stmt = if | while | declare | assign | return | break | continue;
+
+decl_func = identifier, "(", iden_list, ")", "{", stmt_list, "}";
+
+program = {decl_func | declare};
 ```
 
 Here is some sample code:
