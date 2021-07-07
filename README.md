@@ -83,6 +83,41 @@ Some notes:
 - An `IDENTIFIER` cannot take the name of an existing `KEYWORD` (raises a SyntaxError)
 - `SYMBOL` is for syntax structure only, which is why `=` classifies as an `OPERATOR`
 
+## Parser
+
+The parser integrated in this course is a simple recursive descent parser.
+
+Since the grammar is LL(1), predictive parsing can be integrated as follows (pseudo-code):
+
+```
+def parse_something():
+    if 'next char in follow set of production rule a':
+        return parse_a()
+    elif 'next char in follow set of production rule b':
+        return parse_b()
+```
+
+This can be generalized to LL(k) by embedding extra states to the return value of each parsing function that indicates whether it succeeded in parsing the input according to that rule. Note that the reader's current token must be restored after each failed parse. Since successful parse increments the reader's position by the length of its resulting terminals, the failing parsing function is responsible for the restoring of the reader's position.
+
+```
+def parse_other(reader):
+    store = 'current pos of reader'
+
+    result = 'try parse a'
+    if 'result suceeded':
+        return 'extract AST from result'
+    else:
+        'reset pos of reader to store'
+
+    result = 'try parse b'
+    if 'result suceeded':
+        return 'extract AST from result'
+    else:
+        'reset pos of reader to store'
+
+    // ... and so on
+```
+
 ## Virtual Machine
 
 The runtime of our language consists of a simple stack-based virtual machine with a custom instruction set.
