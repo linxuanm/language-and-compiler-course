@@ -6,11 +6,11 @@
 import os
 import sys
 
-lexer = __import__('1-lexer')
-parser = __import__('2-parser')
-semantic = __import__('3-semantic-analysis')
-codegen = __import__('4-code-generation')
-machine = __import__('5-virtual-machine')
+import day1_lexer as lexer
+import day2_parser as parser
+import day3_semantic_analysis as semantic
+import day4_code_generation as codegen
+import day5_virtual_machine as machine
 
 TokenType = lexer.TokenType
 
