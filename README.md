@@ -89,7 +89,7 @@ The parser integrated in this course is a simple recursive descent parser.
 
 Since the grammar is LL(1), predictive parsing can be integrated as follows (pseudo-code):
 
-```
+```python
 def parse_something():
     if 'next char in follow set of production rule a':
         return parse_a()
@@ -99,7 +99,7 @@ def parse_something():
 
 This can be generalized to LL(k) by embedding extra states to the return value of each parsing function that indicates whether it succeeded in parsing the input according to that rule. Note that the reader's current token must be restored after each failed parse. Since successful parse increments the reader's position by the length of its resulting terminals, the failing parsing function is responsible for the restoring of the reader's position.
 
-```
+```python
 def parse_other(reader):
     store = 'current pos of reader'
 
