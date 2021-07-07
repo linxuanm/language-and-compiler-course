@@ -12,19 +12,26 @@ DFun. Decl ::= Iden "(" [Iden] ")" "{" [Stmt] "}";
 
 token Iden ((letter | '_') (letter | digit | '_')*);
 
-EAdd. Exp ::= Exp "+" Exp1;
-ESub. Exp ::= Exp "+" Exp1;
-EMul. Exp1 ::= Exp1 "+" Exp2;
-EDiv. Exp1 ::= Exp1 "+" Exp2;
-EInt. Exp2 ::= Integer;
-EStr. Exp2 ::= String;
-ETru. Exp2 ::= "TRUE";
-EFal. Exp2 ::= "FALSE";
-ENon. Exp2 ::= "NONE";
-EIde. Exp2 ::= Iden;
-ECal. Exp2 ::= Iden "(" [Exp] ")";
+EOr. Exp ::= Exp "||" Exp1;
+EAnd. Exp1 ::= Exp1 "&&" Exp2;
+EEqu. Exp2 ::= Exp2 "==" Exp3;
+ELeq. Exp2 ::= Exp2 "<=" Exp3;
+EGeq. Exp2 ::= Exp2 ">=" Exp3;
+ELes. Exp2 ::= Exp2 "<" Exp3;
+EGre. Exp2 ::= Exp2 ">" Exp3;
+EAdd. Exp3 ::= Exp3 "+" Exp4;
+ESub. Exp3 ::= Exp3 "-" Exp4;
+EMul. Exp4 ::= Exp4 "*" Exp5;
+EDiv. Exp4 ::= Exp4 "/" Exp5;
+EInt. Exp5 ::= Integer;
+EStr. Exp5 ::= String;
+ETru. Exp5 ::= "TRUE";
+EFal. Exp5 ::= "FALSE";
+ENon. Exp5 ::= "NONE";
+EIde. Exp5 ::= Iden;
+ECal. Exp5 ::= Iden "(" [Exp] ")";
 
-coercions Exp 3;
+coercions Exp 6;
 
 SDec. Stmt ::= "decl" [Iden] ";";
 SAsn. Stmt ::= Iden "=" Exp ";";
