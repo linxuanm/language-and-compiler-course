@@ -30,6 +30,8 @@ class Reader:
                 f'expected "{matcher}"'
             )
 
+        self.pos += 1
+
     def match_optional(self, matcher) -> bool:
         """
         Increments and returns true if matcher matches either the content or
@@ -39,11 +41,36 @@ class Reader:
         if self.pos >= self.len:
             return False
 
-        return seq in self.tokens[self.pos]
+        if seq in self.tokens[self.pos]:
+            self.pos += 1
+            return true
+
+        return False
+
+    def peek(self) -> (str, TokenType):
+        """
+        Returns the next token. No increments.
+        Raises a ParserError if the token list is fully consumed.
+
+        Should only be used for debugging/printing errors.
+        """
+        if self.pos >= self.len:
+            raise ParserError('End of token sequence')
+
+        return self.tokens[self.pos]
 
     def end(self) -> bool:
         return self.pos >= self.len
 
 
 def parse(reader: Reader) -> Program:
-    pass
+    while not reader.end():
+        if reader.match_optional('decl'):
+            pass
+        elif reader.match_optional(TokenType.IDENTIFIER):
+            pass
+        else:
+            raise ParserError(
+                f'Unexpected token {reader.peek()} '
+                'encountered in the global scope'
+            )
