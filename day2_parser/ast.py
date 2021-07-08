@@ -74,6 +74,10 @@ class AST:
 
         raise NotImplementedError
 
+    def __repr__(self):
+        # for debugging purposes
+        return str(self)
+
 
 class Exp(AST):
     """
