@@ -13,8 +13,10 @@ The source language is a type-free language with C-like syntax:
 non_zero = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
 digit = "0" | non_zero;
 alpha = "A" | ... | "Z" | "a" | ... | "z";
-operator = "=" | "<" | ">" | "==" | "<=" | ">=" | "+" | "-" | "*" | "/" | "&&" | "||";
 symbol = "," | ";" | "(" | ")" | "{" | "}";
+operator = "=" | "<" | ">" | "==" | "<=" | ">="
+         | "+" | "-" | "*" | "/" | "&&" | "||"
+         | "!" | "!=";
 
 keyword = "if" | "else" | "while" | "return" | "break" | "continue" | "decl";
 identifier = ((alpha | "_"), {alpha | digit | "_"}) - keyword;
@@ -140,6 +142,7 @@ gstore <glob_var_index>: pops the top of the stack into global variable <glob_va
 lload <local_var_index>: pushes local variable <local_var_index> onto the stack
 lstore <local_var_index>: pops the top of the stack into local variable <local_var_index>
 
+neg: negates the value at the top of the stack
 add: pops two values off the stack, and pushes their sum onto the stack
 subtract: pops <a> and <b> (in that order) off the stack, and pushes <b> - <a> onto the stack
 mul: pops two values off the stack, and pushes their product onto the stack
@@ -150,8 +153,10 @@ or: pops two boolean values off the stack, and pushes their OR result (||) onto 
 
 equal: pops two values off the stack and push true if then are equal, else false
 nequal: pops two values off the stack and push true if then are not equal, else false
-less: pops <a> and <b> off the stack and push true if <a> is less than <b>, else false
-great: pops <a> and <b> off the stack and push true if <a> is greater than <b>, else false
+less: pops <a> and <b> off the stack and push true if <b> is less than <a>, else false
+great: pops <a> and <b> off the stack and push true if <b> is greater than <a>, else false
+leq: pops <a> and <b> off the stack and push true if <b> <= <a>, else false
+geq: pops <a> and <b> off the stack and push true if <b> >= <a>, else false
 
 jmp <code_index>: jumps to code <code_index>
 cjmp <code_index>: pops a boolean value off the stack; if `TRUE`, jumps to code <code_index>

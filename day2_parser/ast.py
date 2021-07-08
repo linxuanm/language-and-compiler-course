@@ -1,4 +1,4 @@
-from day3_semantic_analysis import ExecutionContext
+from day3_semantic_analysis import SemanticContext
 from day4_code_generation import CodeGenContext
 
 
@@ -16,12 +16,31 @@ __all__ = [
 ]
 
 
+BINOP_CODE = {
+    '==': 'equal',
+    '!=': 'nequal',
+    '<': 'less',
+    '>': 'great',
+    '<=': 'leq',
+    '>=': 'geq',
+    '+': 'add',
+    '-': 'subtract',
+    '*': 'mul',
+    '/': 'div'
+}
+
+UNOP_CODE = {
+    '-': 'neg',
+    '!': 'not'
+}
+
+
 class AST:
     """
     The base class of all abstract syntax tree nodes.
     """
 
-    def analysis_pass(self, context: ExecutionContext):
+    def analysis_pass(self, context: SemanticContext):
         """
         The analysis pass whether this node contains valid code.
         Performs semantic validation according to the given checking context.
@@ -34,7 +53,6 @@ class AST:
 
         raise NotImplementedError
 
-
     def code_length(self):
         """
         Returns the length of the generated code of this node (recursive).
@@ -44,7 +62,6 @@ class AST:
         """
 
         raise NotImplementedError
-
 
     def generate_code(self, context: CodeGenContext) -> [str]:
         """
@@ -162,3 +179,55 @@ class Program(AST):
 
     def __init__(self, declarations: [Decl]):
         self.declarations = declarations
+
+
+class BinOp(Exp):
+    """
+    Represents a binary operator and its operands. This one is already written
+    for you.
+
+    TECHNICALLY you should use a separate subclass for each operator,
+    as that improves the flexibility of the code and conforms to OOP
+    standards, but since there is a bijective mapping between the binary
+    operators and their bytecode (all of which has length 1), the pattern can
+    be abused.
+    """
+
+    def __init__(self, op: str, left: Exp, right: Exp):
+        self.op = op
+        self.left = left
+        self.right = right
+
+    def analysis_pass(self, context: SemanticContext):
+        # BinOp imposes no addition contextual contraint or information
+        self.left.analysis_pass(context)
+        self.right.analysis_pass(context)
+
+    def code_length(self):
+        return self.left.code_length() + self.right.code_length() + 1
+
+    def generate_code(self, context: CodeGenContext) -> [str]:
+        left_code = self.left.generate_code(context)
+        right_code = self.right.generate_code(context)
+
+        return left_code + right_code + [BINOP_CODE[self.op]]
+
+
+class UnOp(Exp):
+    """
+    Represents an unary operator and its operands. This one is already written
+    for you.
+    """
+
+    def __init__(self, op: str, value: Exp):
+        self.op = op
+        self.value = value
+
+    def analysis_pass(self, context: SemanticContext):
+        self.value.analysis_pass(context)
+
+    def code_length(self):
+        return self.value.code_length() + 1
+
+    def generate_code(self, context: CodeGenContext):
+        return self.value.generate_code(context) + [UNOP_CODE[self.op]]

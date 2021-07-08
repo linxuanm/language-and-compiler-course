@@ -1,6 +1,6 @@
-from .semantic_context import ExecutionContext
+from .semantic_context import SemanticContext
 
 
 __all__ = [
-    'ExecutionContext'
+    'SemanticContext'
 ]
