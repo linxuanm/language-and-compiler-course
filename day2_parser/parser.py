@@ -41,6 +41,9 @@ class Reader:
 
         return seq in self.tokens[self.pos]
 
+    def end(self) -> bool:
+        return self.pos >= self.len
+
 
 def parse(reader: Reader) -> Program:
     pass
