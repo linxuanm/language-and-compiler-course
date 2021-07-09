@@ -1,8 +1,9 @@
 from .ast import *
-from .parser import parse
+from .parser import Reader, parse
 
 
 __all__ = [
+    'Reader',
     'parse',
     'Exp',
     'Declare',

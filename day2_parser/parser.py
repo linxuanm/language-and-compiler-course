@@ -26,7 +26,7 @@ class Reader:
             raise ParserError('End of token sequence')
 
         upcoming = self.tokens[self.pos]
-        if seq not in upcoming:
+        if matcher not in upcoming:
             raise ParserError(
                 f'Token {upcoming}  does not match the '
                 f'expected "{matcher}"'
@@ -45,10 +45,10 @@ class Reader:
         if self.pos >= self.len:
             return False
 
-        if seq in self.tokens[self.pos]:
+        if matcher in self.tokens[self.pos]:
             if increment:
                 self.pos += 1
-            return true
+            return True
 
         return False
 
@@ -110,4 +110,13 @@ def parse_declare(reader: Reader) -> Declare:
     while reader.test(',', True):
         vars.append(reader.match(TokenType.IDENTIFIER))
 
+    reader.match(';')
+
     return Declare(vars)
+
+
+def parse_func_decl(reader: Reader) -> FuncDecl:
+    """
+    Parses a function declaration.
+    """
+    pass

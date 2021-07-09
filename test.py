@@ -5,12 +5,15 @@
 
 import os
 import sys
+import functools
 
 import day1_lexer as lexer
 import day2_parser as parser
 import day3_semantic_analysis as semantic
 import day4_code_generation as codegen
 import day5_virtual_machine as machine
+
+from day2_parser.ast import *
 
 TokenType = lexer.TokenType
 
@@ -62,7 +65,16 @@ CODE_FILES = {
             (',', TokenType.SYMBOL),
             ('G', TokenType.IDENTIFIER),
             (';', TokenType.SYMBOL)
-        ]
+        ],
+        'ast': Program([
+            Declare([
+                'a', 'b_variable', 'c', 'd', 'e', 'f', 'ashduiahsgjdha',
+                'sjbdjshdbf', 'ASgdjhashjJAJHHKAS128731_'
+            ]),
+            Declare(['mcn']),
+            Declare(['hndf']),
+            Declare(['ajksdkfhsdjk']),
+            Declare(['A', 'B', 'C', 'D', 'E', 'F', 'G'])])
     },
     'fibonacci.code': {
         'tokens': [
@@ -136,7 +148,8 @@ CODE_FILES = {
             (')', TokenType.SYMBOL),
             (';', TokenType.SYMBOL),
             ('}', TokenType.SYMBOL)
-        ]
+        ],
+        'ast': None
     }
 }
 
@@ -174,18 +187,28 @@ def assert_equal(output, expected, meta=''):
     if output == expected:
         good(f'Test Passed: {meta}')
     else:
-        bad('Test Failed:')
-        print()
-        bad(f'Expected {expected}')
-        print()
-        bad(f'Instead got {output}')
-        abort()
+        bad('Test Failed:\n')
+        bad(f'Expected {expected}\n')
+        bad(f'Instead got {output}\n')
 
 
+def wrap_title(test_name):
+
+    def outer(func):
+
+        @functools.wraps(func)
+        def inner(*args, **kwargs):
+            bold(f'Testing {test_name}\n')
+            func(*args, **kwargs)
+            print()
+
+        return inner
+
+    return outer
+
+
+@wrap_title('Lexer')
 def test_lexer(file_ref):
-    bold('Testing Lexer')
-    print()
-
     ref_tokens = get_file_values(file_ref, 'tokens')
     code_sources = {
         i: lexer.load_source_file(os.path.join(CODE_DIR, i)) for i in file_ref
@@ -195,9 +218,18 @@ def test_lexer(file_ref):
     for i in tokens:
         assert_equal(tokens[i], ref_tokens[i], i)
 
-    print()
+
+@wrap_title('Parser')
+def test_parser(file_ref):
+    ref_asts = get_file_values(file_ref, 'ast')
+    tokens = get_file_values(file_ref, 'tokens')
+    asts = {k: parser.parse(parser.Reader(v)) for k, v in tokens.items()}
+
+    for i in asts:
+        assert_equal(asts[i], ref_asts[i], i)
 
 
-tokens = test_lexer(CODE_FILES)
+test_lexer(CODE_FILES)
+test_parser(CODE_FILES)
 
 good('ALL TEST PASSED')

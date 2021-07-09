@@ -109,7 +109,11 @@ class Declare(Stmt, Decl):
         self.vars = vars
 
     def __str__(self):
-        return 'Declare([%s])'%(', '.join(self.vars))
+        return 'Declare([%s])'%(', '.join(f"'{i}'" for i in self.vars))
+
+    def __eq__(self, other):
+        return type(other) == Declare and \
+               compare_unordered(self.vars, other.vars)
 
 
 class Assign(Stmt):
@@ -122,7 +126,7 @@ class Assign(Stmt):
         self.value = value
 
     def __str__(self):
-        return f'Assign({self.var}, {self.value})'
+        return f'Assign(\'{self.var}\', {self.value})'
 
 
 class Return(Stmt):
@@ -211,6 +215,10 @@ class Program(AST):
     def __str__(self):
         return f'Program({self.declarations})'
 
+    def __eq__(self, other):
+        return type(other) == Program and \
+               compare_unordered(self.declarations, other.declarations)
+
 
 class BinOp(Exp):
     """
@@ -246,6 +254,12 @@ class BinOp(Exp):
     def __str__(self):
         return f'{self.op}({self.left}, {self.right})'
 
+    def __eq__(self, other):
+        return type(other) == BinOp and \
+               self.op == other.op and \
+               self.left == other.left and \
+               self.right == other.right
+
 
 class UnOp(Exp):
     """
@@ -268,3 +282,25 @@ class UnOp(Exp):
 
     def __str__(self):
         return f'{self.op}({self.value})'
+
+    def __eq__(self, other):
+        return type(other) == UnOp and \
+               self.op == other.op and \
+               self.value == other.value
+
+
+def compare_unordered(a, b):
+    """
+    Compares two lists without considering its order.
+    Kinda ugly but AST nodes are not hashable.
+    """
+
+    b = list(b)
+
+    try:
+        for i in a:
+            b.remove(i)
+    except ValueError:
+        return False
+
+    return True
