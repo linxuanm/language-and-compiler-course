@@ -108,6 +108,9 @@ class Declare(Stmt, Decl):
     def __init__(self, vars: [str]):
         self.vars = vars
 
+    def __str__(self):
+        return 'Declare([%s])'%(', '.join(self.vars))
+
 
 class Assign(Stmt):
     """
@@ -118,6 +121,9 @@ class Assign(Stmt):
         self.var = var
         self.value = value
 
+    def __str__(self):
+        return f'Assign({self.var}, {self.value})'
+
 
 class Return(Stmt):
     """
@@ -127,19 +133,25 @@ class Return(Stmt):
     def __init__(self, value: Exp):
         self.value = value
 
+    def __str__(self):
+        return f'Return({self.value})'
+
 
 class Break(Stmt):
     """
     Represents a 'break' statement.
     """
-    pass
+
+    def __str__(self):
+        return 'Break'
 
 
 class Continue(Stmt):
     """
     Represents a 'continue' statement.
     """
-    pass
+    def __str__(self):
+        return 'Continue'
 
 
 class If(Stmt):
@@ -149,10 +161,16 @@ class If(Stmt):
     Let else be an empty list if the 'else' statement is empty.
     """
 
-    def __init__(self, condition: Exp, if_code: [Stmt], else_code: [Stmt]):
-        self.condition = condition
+    def __init__(self, cond: Exp, if_code: [Stmt], else_code: [Stmt]):
+        self.cond = cond
         self.if_code = if_code
         self.else_code = else_code
+
+    def __str__(self):
+        if self.else_code:
+            return f'IfElse({self.cond}, {self.if_code}, {self.else_code})'
+
+        return f'If({self.cond}, {self.if_code})'
 
 
 class While(Stmt):
@@ -160,9 +178,12 @@ class While(Stmt):
     Represents a while statement.
     """
 
-    def __init__(self, condition: Exp, code: [Stmt]):
-        self.condition = condition
+    def __init__(self, cond: Exp, code: [Stmt]):
+        self.cond = cond
         self.code = code
+
+    def __str__(self):
+        return f'While({self.cond}, {self.code})'
 
 
 class FuncDecl(Decl):
@@ -175,6 +196,9 @@ class FuncDecl(Decl):
         self.params = params
         self.code = code
 
+    def __str__(self):
+        return f'FuncDecl("{self.func_name}", {self.params}, {self.code})'
+
 
 class Program(AST):
     """
@@ -183,6 +207,9 @@ class Program(AST):
 
     def __init__(self, declarations: [Decl]):
         self.declarations = declarations
+
+    def __str__(self):
+        return f'Program({self.declarations})'
 
 
 class BinOp(Exp):
@@ -216,6 +243,9 @@ class BinOp(Exp):
 
         return left_code + right_code + [BINOP_CODE[self.op]]
 
+    def __str__(self):
+        return f'{self.op}({self.left}, {self.right})'
+
 
 class UnOp(Exp):
     """
@@ -235,3 +265,6 @@ class UnOp(Exp):
 
     def generate_code(self, context: CodeGenContext):
         return self.value.generate_code(context) + [UNOP_CODE[self.op]]
+
+    def __str__(self):
+        return f'{self.op}({self.value})'

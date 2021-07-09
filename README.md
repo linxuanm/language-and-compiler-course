@@ -158,6 +158,11 @@ great: pops <a> and <b> off the stack and push true if <b> is greater than <a>, 
 leq: pops <a> and <b> off the stack and push true if <b> <= <a>, else false
 geq: pops <a> and <b> off the stack and push true if <b> >= <a>, else false
 
+lint <a>: pushes integer <a> onto the stack
+lboo <a>: pushes boolean <a> (represented as 0 or 1) onto the stack
+lstr <a>: pushes string <a> (surronded by double quotes) onto the stack
+lnon: pushes NONE onto the stack
+
 jmp <code_index>: jumps to code <code_index>
 cjmp <code_index>: pops a boolean value off the stack; if `TRUE`, jumps to code <code_index>
 call <func_name>: invokes the function <func_name>
