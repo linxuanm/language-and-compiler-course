@@ -17,7 +17,8 @@ FIRST_SET = {
     'return': {'return'},
     'break': {'break'},
     'continue': {'continue'},
-    'unop_exp': {'-', '!'}
+    'unop_exp': {'-', '!'},
+    'iden_start': {TokenType.IDENTIFIER} # left factors assign and exp
 }
 FIRST_SET['assign'] = FIRST_SET['identifier']
 FIRST_SET['decl_func'] = FIRST_SET['identifier']
@@ -104,6 +105,13 @@ class Reader:
 
         return self.tokens[self.pos]
 
+    def back(self) -> None:
+        """
+        Don't use this. It doesn't belong in LL(1) parsers.
+        """
+
+        self.pos -= 1
+
     def end(self) -> bool:
         return self.pos >= self.len
 
@@ -176,13 +184,13 @@ def parse_exp_list(reader: Reader) -> [Exp]:
     exps = []
 
     if reader.test_set(FIRST_SET['exp']):
-        exp.append(parse_exp(reader))
+        exps.append(parse_exp(reader))
 
         while reader.test(','):
             reader.match(',')
-            exp.append(parse_exp(reader))
+            exps.append(parse_exp(reader))
 
-    return exp
+    return exps
 
 
 def parse_declare(reader: Reader) -> Declare:
@@ -248,6 +256,67 @@ def parse_if(reader: Reader) -> If:
     return If(cond, if_code, else_code)
 
 
+def parse_while(reader: Reader) -> While:
+    """
+    Parses a while loop. Should be pretty trivial after completing 'parse_if'.
+    """
+
+    reader.match('while')
+
+    reader.match('(')
+    cond = parse_exp(reader)
+    reader.match(')')
+
+    reader.match('{')
+    code = parse_statement_list(reader)
+    reader.match('}')
+
+    return While(cond, code)
+
+
+def parse_identifier_start(reader: Reader) -> Stmt:
+    """
+    Used to resolve ambiguity between assign and exp.
+
+    assign = identifier, "=", exp, ";";
+    var_exp = identifier;
+    func_call = identifier, '(', exp_list, ')';
+
+    As you can see, all of the above begins with an identifier, and since
+
+    stmt = ... | exp;
+
+    , there is an indirect ambiguity induced by identical starting token.
+
+    Luckily this is trivial to fix; just left factor.
+    """
+
+    # nested since this is not used elsewhere
+    def partial_parse_assign(name, reader):
+        reader.match('=')
+        value = parse_exp(reader)
+        reader.match(';')
+
+        return Assign(name, value)
+
+    # note: there should be NO backtracking in LL(1) parsers
+    # however, left factoring the exp production makes the code less
+    # straightforward, which is something that I want to avoid in this course
+    def backtrack_and_parse_exp(reader):
+        reader.back()
+        return parse_exp(reader)
+
+    name = reader.match(TokenType.IDENTIFIER)
+
+    if reader.test('='):
+        return partial_parse_assign(name, reader)
+
+    else:
+        value = backtrack_and_parse_exp(reader)
+        reader.match(';')
+        return ExpStmt(value)
+
+
 def parse_statement(reader: Reader) -> Stmt:
     """
     Parses a statement (stmt).
@@ -266,20 +335,16 @@ def parse_statement(reader: Reader) -> Stmt:
     # something that parses the given production derived from the tested
     # FIRST_SET
     if reader.test_set(FIRST_SET['if']):
-        pass
+        return parse_if(reader)
 
     elif reader.test_set(FIRST_SET['while']):
-        pass
+        return parse_while(reader)
 
     elif reader.test_set(FIRST_SET['declare']):
         return parse_declare(reader)
 
-    elif reader.test_set(FIRST_SET['assign']):
-        name = reader.match(TokenType.IDENTIFIER)
-        reader.match('=')
-        exp = parse_exp(reader)
-        reader.match(';')
-        return Assign(name, exp)
+    elif reader.test_set(FIRST_SET['iden_start']):
+        return parse_identifier_start(reader)
 
     elif reader.test_set(FIRST_SET['return']):
         reader.match('return')
@@ -296,11 +361,6 @@ def parse_statement(reader: Reader) -> Stmt:
         reader.match('continue')
         reader.match(';')
         return Continue()
-
-    elif reader.test_set(FIRST_SET['exp']):
-        exp = parse_exp(reader)
-        reader.match(';')
-        return exp
 
     else:
         raise ParserError(

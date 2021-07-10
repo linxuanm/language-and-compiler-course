@@ -19,7 +19,8 @@ __all__ = [
     'UnOp',
     'Literal',
     'VarExp',
-    'FuncCall'
+    'FuncCall',
+    'ExpStmt'
 ]
 
 
@@ -350,6 +351,22 @@ class FuncCall(Exp):
         return type(other) == FuncCall and \
                self.name == other.name and \
                self.params == other.params
+
+
+class ExpStmt(Stmt):
+    """
+    A statement where there is a single discarded expression value.
+    """
+
+    def __init__(self, value: Exp):
+        self.value = value
+
+    def __str__(self):
+        return f'ExpStmt({self.value})'
+
+    def __eq__(self, other):
+        return type(other) == ExpStmt and \
+               self.value == other.value
 
 
 def compare_unordered(a, b):

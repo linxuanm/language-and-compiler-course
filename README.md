@@ -30,6 +30,7 @@ literal = string | none | int | bool;
 
 (* Syntax *)
 iden_list = [identifier, {",", identifier}];
+exp_list = [exp, {",", exp}];
 stmt_list = {stmt};
 
 declare = "decl", iden_list, ";";
