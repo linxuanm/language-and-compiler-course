@@ -14,7 +14,12 @@ __all__ = [
     'If',
     'While',
     'FuncDecl',
-    'Program'
+    'Program',
+    'BinOp',
+    'UnOp',
+    'Literal',
+    'VarExp',
+    'FuncCall'
 ]
 
 
@@ -295,6 +300,56 @@ class UnOp(Exp):
         return type(other) == UnOp and \
                self.op == other.op and \
                self.value == other.value
+
+
+class Literal(Exp):
+    """
+    Represents a single literal value.
+    """
+
+    def __init__(self, value: str):
+        self.value = value
+
+    def __str__(self):
+        return f'Literal({self.value})'
+
+    def __eq__(self, other):
+        return type(other) == Literal and \
+               self.value == other.value
+
+
+class VarExp(Exp):
+    """
+    Represents the evaluation of a variable.
+    """
+
+    def __init__(self, name: str):
+        self.name = name
+
+    def __str__(self):
+        return f'VarExp({self.name})'
+
+    def __eq__(self, other):
+        return type(other) == VarExp and \
+               self.name == other.name
+
+
+class FuncCall(Exp):
+    """
+    Represents a function invocation.
+    """
+
+    def __init__(self, name: str, params: [Exp]):
+        self.name = name
+        self.params = params
+
+    def __str__(self):
+        return f'FuncCall({self.name}, {self.params})'
+
+    def __eq__(self, other):
+        return type(other) == FuncCall and \
+               self.name == other.name and \
+               self.params == other.params
 
 
 def compare_unordered(a, b):

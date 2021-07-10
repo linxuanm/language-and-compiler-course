@@ -10,17 +10,19 @@ from .ast import *
 FIRST_SET = {
     'identifier': {TokenType.IDENTIFIER},
     'literal': {TokenType.LITERAL},
-    'exp': {TokenType.LITERAL, TokenType.IDENTIFIER},
+    'imm_exp': {TokenType.LITERAL, TokenType.IDENTIFIER},
     'if': {'if'},
     'while': {'while'},
     'declare': {'decl'},
     'return': {'return'},
     'break': {'break'},
     'continue': {'continue'},
+    'unop_exp': {'-', '!'}
 }
 FIRST_SET['assign'] = FIRST_SET['identifier']
 FIRST_SET['decl_func'] = FIRST_SET['identifier']
 FIRST_SET['program'] = FIRST_SET['decl_func'].union(FIRST_SET['declare'])
+FIRST_SET['exp'] = FIRST_SET['imm_exp'].union(FIRST_SET['unop_exp'])
 FIRST_SET['stmt'] = functools.reduce(lambda a, b: a.union(b), [
     FIRST_SET[i] for i in (
         'if', 'while', 'declare', 'assign',
@@ -106,9 +108,6 @@ class Reader:
         return self.pos >= self.len
 
 
-from .exp_parser import parse_exp
-
-
 def parse(reader: Reader) -> Program:
     """
     Parses an entire program. This one is already written for you.
@@ -160,7 +159,7 @@ def parse_identifier_list(reader: Reader) -> [str]:
 
     names = []
 
-    if reader.test(TokenType.IDENTIFIER):
+    if reader.test_set(FIRST_SET['identifier']):
         names.append(reader.match(TokenType.IDENTIFIER))
 
         while reader.test(','):
@@ -168,6 +167,22 @@ def parse_identifier_list(reader: Reader) -> [str]:
             names.append(reader.match(TokenType.IDENTIFIER))
 
     return names
+
+def parse_exp_list(reader: Reader) -> [Exp]:
+    """
+    Parses 0 or more expressions and returns them as a list.
+    """
+
+    exps = []
+
+    if reader.test_set(FIRST_SET['exp']):
+        exp.append(parse_exp(reader))
+
+        while reader.test(','):
+            reader.match(',')
+            exp.append(parse_exp(reader))
+
+    return exp
 
 
 def parse_declare(reader: Reader) -> Declare:
@@ -242,6 +257,14 @@ def parse_statement(reader: Reader) -> Stmt:
 
     # since we aren't using a LL(1) table for complexity concerns, we use
     # if/else to accomplish the same idea
+    #
+    # note that the idea of 'checking if the FIRST_SET contains the next token
+    # and then explicitly matching only one specific token' does not make much
+    # sense programmatically; however, in this case we are demontrating the
+    # deriving of a production from another given the starting token, and
+    # therefore we abstracts everything inside each 'if' switch as simply
+    # something that parses the given production derived from the tested
+    # FIRST_SET
     if reader.test_set(FIRST_SET['if']):
         pass
 
@@ -275,10 +298,15 @@ def parse_statement(reader: Reader) -> Stmt:
         return Continue()
 
     elif reader.test_set(FIRST_SET['exp']):
-        return parse_exp(reader)
+        exp = parse_exp(reader)
+        reader.match(';')
+        return exp
 
     else:
         raise ParserError(
             f'Unexpected token {reader.peek()} encountered'
             'while parsing statement'
         )
+
+
+from .exp_parser import parse_exp
