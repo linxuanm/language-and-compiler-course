@@ -199,8 +199,9 @@ def wrap_title(test_name):
         @functools.wraps(func)
         def inner(*args, **kwargs):
             bold(f'Testing {test_name}\n')
-            func(*args, **kwargs)
+            value = func(*args, **kwargs)
             print()
+            return value
 
         return inner
 
@@ -218,18 +219,21 @@ def test_lexer(file_ref):
     for i in tokens:
         assert_equal(tokens[i], ref_tokens[i], i)
 
+    return tokens
+
 
 @wrap_title('Parser')
-def test_parser(file_ref):
+def test_parser(file_ref, prev_tokens):
     ref_asts = get_file_values(file_ref, 'ast')
-    tokens = get_file_values(file_ref, 'tokens')
-    asts = {k: parser.parse(parser.Reader(v)) for k, v in tokens.items()}
+    asts = {k: parser.parse(parser.Reader(v)) for k, v in prev_tokens.items()}
 
     for i in asts:
         assert_equal(asts[i], ref_asts[i], i)
 
+    return asts
 
-test_lexer(CODE_FILES)
-test_parser(CODE_FILES)
+
+tokens = test_lexer(CODE_FILES)
+asts = test_parser(CODE_FILES, tokens)
 
 good('ALL TEST PASSED')

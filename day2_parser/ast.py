@@ -4,6 +4,8 @@ from day4_code_generation import CodeGenContext
 
 __all__ = [
     'Exp',
+    'Stmt',
+    'Decl',
     'Declare',
     'Assign',
     'Return',
@@ -202,6 +204,12 @@ class FuncDecl(Decl):
 
     def __str__(self):
         return f'FuncDecl("{self.func_name}", {self.params}, {self.code})'
+
+    def __eq__(self, other):
+        return type(other) == FuncDecl and \
+               self.func_name == other.func_name and \
+               self.params == other.params and \
+               self.code == other.code
 
 
 class Program(AST):

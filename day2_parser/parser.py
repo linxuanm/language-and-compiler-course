@@ -1,6 +1,30 @@
+import functools
+
 from day1_lexer import TokenType, ParserError
 
 from .ast import *
+
+
+# despite the prevalence of production rules whose first set length is 1,
+# a first set table is still established for illustration purposes
+FIRST_SET = {
+    'identifier': {TokenType.IDENTIFIER},
+    'literal': {TokenType.LITERAL},
+    'if': {'if'},
+    'while': {'while'},
+    'declare': {'decl'},
+    'return': {'return'},
+    'break': {'break'},
+    'continue': {'continue'},
+}
+FIRST_SET['assign'] = FIRST_SET['identifier']
+FIRST_SET['decl_func'] = FIRST_SET['identifier']
+FIRST_SET['program'] = FIRST_SET['decl_func'].union(FIRST_SET['declare'])
+FIRST_SET['stmt'] = functools.reduce(lambda a, b: a.union(b), [
+    FIRST_SET[i] for i in (
+        'if', 'while', 'declare', 'assign', 'return', 'break', 'continue'
+    )
+])
 
 
 class Reader:
@@ -49,6 +73,18 @@ class Reader:
             if increment:
                 self.pos += 1
             return True
+
+        return False
+
+    def test_set(self, first_set: set, increment: bool = False) -> bool:
+        """
+        Tests whether the next token is in the given first set.
+        Behaves similarly to Reader.test
+        """
+
+        for i in first_set:
+            if self.test(i, increment):
+                return True
 
         return False
 
@@ -102,13 +138,11 @@ def parse_declare(reader: Reader) -> Declare:
     vars = []
     reader.match('decl')
 
-    if reader.test(';', True):
-        return Declare(vars)
-
-    vars.append(reader.match(TokenType.IDENTIFIER))
-
-    while reader.test(',', True):
+    if reader.test(TokenType.IDENTIFIER):
         vars.append(reader.match(TokenType.IDENTIFIER))
+
+        while reader.test(',', True):
+            vars.append(reader.match(TokenType.IDENTIFIER))
 
     reader.match(';')
 
@@ -119,4 +153,28 @@ def parse_func_decl(reader: Reader) -> FuncDecl:
     """
     Parses a function declaration.
     """
+
+    name = reader.match(TokenType.IDENTIFIER)
+    params = []
+    code = []
+
+    reader.match('(')
+
+    if reader.test(TokenType.IDENTIFIER):
+        params.append(reader.match(TokenType.IDENTIFIER))
+
+        while reader.test(',', True):
+            params.append(reader.match(TokenType.IDENTIFIER))
+
+    reader.match(')')
+    reader.match('{')
+
+    while reader.test_set(FIRST_SET['stmt']):
+        code.append(parse_statement(reader))
+
+    reader.match('}')
+
+    return FuncDecl(name, params, code)
+
+def parse_statement(reader) -> Stmt:
     pass
