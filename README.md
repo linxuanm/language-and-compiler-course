@@ -1,4 +1,4 @@
-# Programming Language and Compiler
+# Programming Languages and Compilers
 
 This course provides an introductory insight into how programming languages and compilers work. Throughout the homework in this course, you will create a simple, dynamic language with a virtual machine runtime.
 
