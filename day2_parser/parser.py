@@ -6,10 +6,11 @@ from .ast import *
 
 
 # despite the prevalence of production rules whose first set length is 1,
-# a first set table is still established for illustration purposes
+# a first set is still established for illustration purposes
 FIRST_SET = {
     'identifier': {TokenType.IDENTIFIER},
     'literal': {TokenType.LITERAL},
+    'exp': {TokenType.LITERAL, TokenType.IDENTIFIER},
     'if': {'if'},
     'while': {'while'},
     'declare': {'decl'},
@@ -22,7 +23,8 @@ FIRST_SET['decl_func'] = FIRST_SET['identifier']
 FIRST_SET['program'] = FIRST_SET['decl_func'].union(FIRST_SET['declare'])
 FIRST_SET['stmt'] = functools.reduce(lambda a, b: a.union(b), [
     FIRST_SET[i] for i in (
-        'if', 'while', 'declare', 'assign', 'return', 'break', 'continue'
+        'if', 'while', 'declare', 'assign',
+        'return', 'break', 'continue', 'exp'
     )
 ])
 
@@ -117,9 +119,9 @@ def parse(reader: Reader) -> Program:
     glob_decl = []
 
     while not reader.end():
-        if reader.test('decl'):
+        if reader.test_set(FIRST_SET['declare']):
             glob_decl.append(parse_declare(reader))
-        elif reader.test(TokenType.IDENTIFIER):
+        elif reader.test_set(FIRST_SET['decl_func']):
             glob_decl.append(parse_func_decl(reader))
         else:
             raise ParserError(
@@ -177,4 +179,30 @@ def parse_func_decl(reader: Reader) -> FuncDecl:
     return FuncDecl(name, params, code)
 
 def parse_statement(reader) -> Stmt:
-    pass
+    """
+    Parses a statement (stmt).
+    Can be any of 'if', 'while', 'declare', 'assign', 'return', 'break',
+    'continue' or 'exp'.
+    """
+
+    if reader.test_set(FIRST_SET['if']):
+        pass
+    elif reader.test_set(FIRST_SET['while']):
+        pass
+    elif reader.test_set(FIRST_SET['declare']):
+        return parse_declare(reader)
+    elif reader.test_set(FIRST_SET['assign']):
+        pass
+    elif reader.test_set(FIRST_SET['return']):
+        pass
+    elif reader.test_set(FIRST_SET['break']):
+        return Break()
+    elif reader.test_set(FIRST_SET['continue']):
+        return Continue()
+    elif reader.test_set(FIRST_SET['exp']):
+        pass
+    else:
+        raise ParserError(
+            f'Unexpected token {reader.peek()} encountered'
+            'while parsing statement'
+        )

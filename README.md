@@ -39,7 +39,7 @@ continue = "continue", ";";
 if = "if", "(", exp, ")", "{", stmt_list, "}", {"else", "{", stmt_list, "}"};
 while = "while", "(", exp, ")", "{", stmt_list, "}";
 
-stmt = if | while | declare | assign | return | break | continue;
+stmt = if | while | declare | assign | return | break | continue | exp;
 
 decl_func = identifier, "(", iden_list, ")", "{", stmt_list, "}";
 
