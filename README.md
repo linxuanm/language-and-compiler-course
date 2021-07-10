@@ -1,6 +1,6 @@
 # Programming Language and Compiler
 
-This course provides an introductory insight into how programming languages and compilers work. Throughout the homework in this course, you will create a simple, dynamic language with a virtual runtime.
+This course provides an introductory insight into how programming languages and compilers work. Throughout the homework in this course, you will create a simple, dynamic language with a virtual machine runtime.
 
 Due to the short length of this course, the main focus will be on understanding basic concepts such as compilation and runtime, creating a runtime VM, and implementing simple parsing algorithms. Type handling and inferences, as well as optimizations, will not be covered, but are encouraged if you have spare time.
 
