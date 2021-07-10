@@ -51,7 +51,7 @@ program = {decl_func | declare};
 Here is some sample code:
 
 ```
-decl my_global_var, other_var
+decl my_global_var, other_var;
 
 add_func(a, b) {
     return a + b;
