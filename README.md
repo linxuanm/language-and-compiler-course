@@ -95,13 +95,17 @@ Since the grammar is LL(1), predictive parsing can be integrated as follows (pse
 
 ```python
 def parse_something():
-    if 'next char in follow set of production rule a':
+    if 'next token in first set of production rule a':
         return parse_a()
-    elif 'next char in follow set of production rule b':
+    elif 'next token in first set of production rule b':
         return parse_b()
 ```
 
-This can be generalized to LL(k) by embedding extra states to the return value of each parsing function that indicates whether it succeeded in parsing the input according to that rule. Note that the reader's current token must be restored after each failed parse. Since successful parse increments the reader's position by the length of its resulting terminals, the failing parsing function is responsible for the restoring of the reader's position.
+Note that care must be taken when designing your own LL(1) grammar in the future. There must be no ambiguity in deriving production rules, and the grammar must strictly conform to the LL(1) rule checklist mentioned in [Day 2 Slides](/slides/day-2-parser.pdf).
+
+This can be generalized to LL(k) by embedding extra context to the return value of each parsing function that indicates whether it succeeded in parsing the input according to that rule. Note that the reader's current token must be restored after each failed parse (backtracking). Since successful parse increments the reader's position by the length of its resulting terminals, the failing parsing function is responsible for the restoring of the reader's position.
+
+This method requires more context information than predictive parsing
 
 ```python
 def parse_other(reader):
