@@ -1,0 +1,27 @@
+main() {
+    decl a, b;
+
+
+    a = 20;
+
+    b = 0;
+
+    if (a) {
+        print(a);
+    }
+    a = 10;
+    b = add(a, b);
+}
+
+foo(a, b, casda) {
+    while (TRUE) {
+        print(b);
+        if (a) {
+            return FALSE;
+        }
+    }
+}
+
+add(a, b) {
+    return 0;
+}

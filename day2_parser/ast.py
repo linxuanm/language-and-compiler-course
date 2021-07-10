@@ -136,6 +136,11 @@ class Assign(Stmt):
     def __str__(self):
         return f'Assign(\'{self.var}\', {self.value})'
 
+    def __eq__(self, other):
+        return type(other) == Assign and \
+               self.var == other.var and \
+               self.value == other.value
+
 
 class Return(Stmt):
     """
@@ -148,6 +153,10 @@ class Return(Stmt):
     def __str__(self):
         return f'Return({self.value})'
 
+    def __eq__(self, other):
+        return type(other) == Return and \
+               self.value == other.value
+
 
 class Break(Stmt):
     """
@@ -156,6 +165,9 @@ class Break(Stmt):
 
     def __str__(self):
         return 'Break'
+
+    def __eq__(self, other):
+        return type(other) == Break
 
 
 class Continue(Stmt):
@@ -182,7 +194,12 @@ class If(Stmt):
         if self.else_code:
             return f'IfElse({self.cond}, {self.if_code}, {self.else_code})'
 
-        return f'If({self.cond}, {self.if_code})'
+        return f'If({self.cond}, {self.if_code}, {self.else_code})'
+
+    def __eq__(self, other):
+        return type(other) == If and \
+               self.if_code == other.if_code and \
+               self.else_code == other.else_code
 
 
 class While(Stmt):
@@ -197,6 +214,11 @@ class While(Stmt):
     def __str__(self):
         return f'While({self.cond}, {self.code})'
 
+    def __eq__(self, other):
+        return type(other) == While and \
+               self.cond == other.cond and \
+               self.code == other.code
+
 
 class FuncDecl(Decl):
     """
@@ -209,7 +231,7 @@ class FuncDecl(Decl):
         self.code = code
 
     def __str__(self):
-        return f'FuncDecl("{self.func_name}", {self.params}, {self.code})'
+        return f'FuncDecl(\'{self.func_name}\', {self.params}, {self.code})'
 
     def __eq__(self, other):
         return type(other) == FuncDecl and \
@@ -312,7 +334,7 @@ class Literal(Exp):
         self.value = value
 
     def __str__(self):
-        return f'Literal({self.value})'
+        return f'Literal(\'{self.value}\')'
 
     def __eq__(self, other):
         return type(other) == Literal and \
@@ -328,7 +350,7 @@ class VarExp(Exp):
         self.name = name
 
     def __str__(self):
-        return f'VarExp({self.name})'
+        return f'VarExp(\'{self.name}\')'
 
     def __eq__(self, other):
         return type(other) == VarExp and \
@@ -345,7 +367,7 @@ class FuncCall(Exp):
         self.params = params
 
     def __str__(self):
-        return f'FuncCall({self.name}, {self.params})'
+        return f'FuncCall(\'{self.name}\', {self.params})'
 
     def __eq__(self, other):
         return type(other) == FuncCall and \

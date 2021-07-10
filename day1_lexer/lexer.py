@@ -7,8 +7,8 @@ from .presets import TokenType, load_source_file
 
 TOKEN_REGEX = {
     r'(if|else|while|return|break|continue|decl)': TokenType.KEYWORD,
-    r'([_a-zA-Z][_a-zA-Z0-9]*)': TokenType.IDENTIFIER,
     r'(NONE|TRUE|FALSE|".*"|\d+)': TokenType.LITERAL,
+    r'([_a-zA-Z][_a-zA-Z0-9]*)': TokenType.IDENTIFIER,
     r'(,|;|\(|\)|\{|\})': TokenType.SYMBOL,
     r'(!=|==|<=|>=|<|>|=|!|\+|-|\*|/|&&|\|\|)': TokenType.OPERATOR,
     r'(\s+)': TokenType.WHITESPACE

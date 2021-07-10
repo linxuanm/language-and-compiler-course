@@ -25,7 +25,7 @@ def parse_exp_imm(reader: Reader) -> Exp:
         return Literal(reader.match(TokenType.LITERAL))
 
     elif reader.test_set(FIRST_SET['unop_exp']):
-        return Unop(reader.match(TokenType.OPERATOR), parse_exp(reader))
+        return UnOp(reader.match(TokenType.OPERATOR), parse_exp(reader))
 
     elif reader.test_set(FIRST_SET['identifier']):
         name = reader.match(TokenType.IDENTIFIER)

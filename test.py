@@ -76,6 +76,111 @@ CODE_FILES = {
             Declare(['ajksdkfhsdjk']),
             Declare(['A', 'B', 'C', 'D', 'E', 'F', 'G'])])
     },
+    'structures.code': {
+        'tokens': [
+            ('main', TokenType.IDENTIFIER),
+            ('(', TokenType.SYMBOL),
+            (')', TokenType.SYMBOL),
+            ('{', TokenType.SYMBOL),
+            ('decl', TokenType.KEYWORD),
+            ('a', TokenType.IDENTIFIER),
+            (',', TokenType.SYMBOL),
+            ('b', TokenType.IDENTIFIER),
+            (';', TokenType.SYMBOL),
+            ('a', TokenType.IDENTIFIER),
+            ('=', TokenType.OPERATOR),
+            ('20', TokenType.LITERAL),
+            (';', TokenType.SYMBOL),
+            ('b', TokenType.IDENTIFIER),
+            ('=', TokenType.OPERATOR),
+            ('0', TokenType.LITERAL),
+            (';', TokenType.SYMBOL),
+            ('if', TokenType.KEYWORD),
+            ('(', TokenType.SYMBOL),
+            ('a', TokenType.IDENTIFIER),
+            (')', TokenType.SYMBOL),
+            ('{', TokenType.SYMBOL),
+            ('print', TokenType.IDENTIFIER),
+            ('(', TokenType.SYMBOL),
+            ('a', TokenType.IDENTIFIER),
+            (')', TokenType.SYMBOL),
+            (';', TokenType.SYMBOL),
+            ('}', TokenType.SYMBOL),
+            ('a', TokenType.IDENTIFIER),
+            ('=', TokenType.OPERATOR),
+            ('10', TokenType.LITERAL),
+            (';', TokenType.SYMBOL),
+            ('b', TokenType.IDENTIFIER),
+            ('=', TokenType.OPERATOR),
+            ('add', TokenType.IDENTIFIER),
+            ('(', TokenType.SYMBOL),
+            ('a', TokenType.IDENTIFIER),
+            (',', TokenType.SYMBOL),
+            ('b', TokenType.IDENTIFIER),
+            (')', TokenType.SYMBOL),
+            (';', TokenType.SYMBOL),
+            ('}', TokenType.SYMBOL),
+            ('foo', TokenType.IDENTIFIER),
+            ('(', TokenType.SYMBOL),
+            ('a', TokenType.IDENTIFIER),
+            (',', TokenType.SYMBOL),
+            ('b', TokenType.IDENTIFIER),
+            (',', TokenType.SYMBOL),
+            ('casda', TokenType.IDENTIFIER),
+            (')', TokenType.SYMBOL),
+            ('{', TokenType.SYMBOL),
+            ('while', TokenType.KEYWORD),
+            ('(', TokenType.SYMBOL),
+            ('TRUE', TokenType.LITERAL),
+            (')', TokenType.SYMBOL),
+            ('{', TokenType.SYMBOL),
+            ('print', TokenType.IDENTIFIER),
+            ('(', TokenType.SYMBOL),
+            ('b', TokenType.IDENTIFIER),
+            (')', TokenType.SYMBOL),
+            (';', TokenType.SYMBOL),
+            ('if', TokenType.KEYWORD),
+            ('(', TokenType.SYMBOL),
+            ('a', TokenType.IDENTIFIER),
+            (')', TokenType.SYMBOL),
+            ('{', TokenType.SYMBOL),
+            ('return', TokenType.KEYWORD),
+            ('FALSE', TokenType.LITERAL),
+            (';', TokenType.SYMBOL),
+            ('}', TokenType.SYMBOL),
+            ('}', TokenType.SYMBOL),
+            ('}', TokenType.SYMBOL),
+            ('add', TokenType.IDENTIFIER),
+            ('(', TokenType.SYMBOL),
+            ('a', TokenType.IDENTIFIER),
+            (',', TokenType.SYMBOL),
+            ('b', TokenType.IDENTIFIER),
+            (')', TokenType.SYMBOL),
+            ('{', TokenType.SYMBOL),
+            ('return', TokenType.KEYWORD),
+            ('0', TokenType.LITERAL),
+            (';', TokenType.SYMBOL),
+            ('}', TokenType.SYMBOL)
+        ],
+        'ast': Program([
+            FuncDecl('main', [], [
+                Declare(['a', 'b']),
+                Assign('a', Literal('20')),
+                Assign('b', Literal('0')),
+                If(VarExp('a'), [
+                    ExpStmt(FuncCall('print', [VarExp('a')]))
+                ], []),
+                Assign('a', Literal('10')),
+                Assign('b', FuncCall('add', [VarExp('a'), VarExp('b')]))
+            ]),
+            FuncDecl('foo', ['a', 'b', 'casda'], [
+                While(Literal('TRUE'), [
+                    ExpStmt(FuncCall('print', [VarExp('b')])),
+                    If(VarExp('a'), [Return(Literal('FALSE'))], [])
+                ])
+            ]),
+            FuncDecl('add', ['a', 'b'], [Return(Literal('0'))])])
+    },
     'fibonacci.code': {
         'tokens': [
             ('main', TokenType.IDENTIFIER),
@@ -190,6 +295,8 @@ def assert_equal(output, expected, meta=''):
         bad('Test Failed:\n')
         bad(f'Expected {expected}\n')
         bad(f'Instead got {output}\n')
+
+        abort()
 
 
 def wrap_title(test_name):
