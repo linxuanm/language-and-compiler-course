@@ -4,6 +4,8 @@ This course provides an introductory insight into how programming languages and 
 
 Due to the short length of this course, the main focus will be on understanding basic concepts such as compilation and runtime, creating a runtime VM, and implementing simple parsing algorithms. Type handling and inferences, as well as optimizations, will not be covered, but are encouraged if you have spare time.
 
+Note that the sample answer, as well as some pre-written code, are not (even trivially) optimized. This is beucase this course is aimed to teach the ideas and concepts behind a compiler, and therefore explicitness and clarity is far superior than code efficiency.
+
 ## Source Language
 
 The source language is a type-free language with C-like syntax:

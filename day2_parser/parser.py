@@ -48,6 +48,9 @@ class Reader:
         Returns the content of the token.
         """
 
+        if type(matcher) not in (str, TokenType):
+            raise ValueError(f'Matcher must be of type str or TokenType')
+
         if self.pos >= self.len:
             raise ParserError('End of token sequence')
 
@@ -61,31 +64,28 @@ class Reader:
         self.pos += 1
         return upcoming[0]
 
-    def test(self, matcher, increment: bool = False) -> bool:
+    def test(self, matcher) -> bool:
         """
         Returns true if matcher matches either the content or the type of the
-        upcoming token (optional increment), otherwise returns false (no
-        increment).
+        upcoming token, otherwise returns false.
         """
+
+        if type(matcher) not in (str, TokenType):
+            raise ValueError(f'Matcher must be of type str or TokenType')
 
         if self.pos >= self.len:
             return False
 
-        if matcher in self.tokens[self.pos]:
-            if increment:
-                self.pos += 1
-            return True
+        return matcher in self.tokens[self.pos]
 
-        return False
-
-    def test_set(self, first_set: set, increment: bool = False) -> bool:
+    def test_set(self, first_set: set) -> bool:
         """
         Tests whether the next token is in the given first set.
         Behaves similarly to Reader.test
         """
 
         for i in first_set:
-            if self.test(i, increment):
+            if self.test(i):
                 return True
 
         return False
@@ -106,6 +106,9 @@ class Reader:
         return self.pos >= self.len
 
 
+from .exp_parser import parse_exp
+
+
 def parse(reader: Reader) -> Program:
     """
     Parses an entire program. This one is already written for you.
@@ -118,7 +121,7 @@ def parse(reader: Reader) -> Program:
 
     glob_decl = []
 
-    while not reader.end():
+    while reader.test_set(FIRST_SET['program']):
         if reader.test_set(FIRST_SET['declare']):
             glob_decl.append(parse_declare(reader))
         elif reader.test_set(FIRST_SET['decl_func']):
@@ -128,6 +131,11 @@ def parse(reader: Reader) -> Program:
                 f'Unexpected token {reader.peek()} '
                 'encountered in the global scope'
             )
+
+    if not reader.end():
+        raise ParserError(
+            f'Remaining unstructured token beginning with {reader.peek()}'
+        )
 
     return Program(glob_decl)
 
@@ -143,7 +151,8 @@ def parse_declare(reader: Reader) -> Declare:
     if reader.test(TokenType.IDENTIFIER):
         vars.append(reader.match(TokenType.IDENTIFIER))
 
-        while reader.test(',', True):
+        while reader.test(','):
+            reader.match(',')
             vars.append(reader.match(TokenType.IDENTIFIER))
 
     reader.match(';')
@@ -165,7 +174,8 @@ def parse_func_decl(reader: Reader) -> FuncDecl:
     if reader.test(TokenType.IDENTIFIER):
         params.append(reader.match(TokenType.IDENTIFIER))
 
-        while reader.test(',', True):
+        while reader.test(','):
+            reader.match(',')
             params.append(reader.match(TokenType.IDENTIFIER))
 
     reader.match(')')
@@ -187,20 +197,32 @@ def parse_statement(reader) -> Stmt:
 
     if reader.test_set(FIRST_SET['if']):
         pass
+
     elif reader.test_set(FIRST_SET['while']):
         pass
+
     elif reader.test_set(FIRST_SET['declare']):
         return parse_declare(reader)
+
     elif reader.test_set(FIRST_SET['assign']):
         pass
+
     elif reader.test_set(FIRST_SET['return']):
-        pass
+        reader.match('return')
+        exp = parse_exp(reader)
+        return Return(exp)
+
     elif reader.test_set(FIRST_SET['break']):
+        reader.match('break')
         return Break()
+
     elif reader.test_set(FIRST_SET['continue']):
+        reader.match('continue')
         return Continue()
+
     elif reader.test_set(FIRST_SET['exp']):
-        pass
+        return parse_exp(reader)
+
     else:
         raise ParserError(
             f'Unexpected token {reader.peek()} encountered'
