@@ -140,21 +140,43 @@ def parse(reader: Reader) -> Program:
     return Program(glob_decl)
 
 
+def parse_statement_list(reader: Reader) -> [Stmt]:
+    """
+    Parses 0 or more statements and returns them as a list.
+    """
+
+    code = []
+
+    while reader.test_set(FIRST_SET['stmt']):
+        code.append(parse_statement(reader))
+
+    return code
+
+
+def parse_identifier_list(reader: Reader) -> [str]:
+    """
+    Parses 0 or more identifiers and returns them as a list.
+    """
+
+    names = []
+
+    if reader.test(TokenType.IDENTIFIER):
+        names.append(reader.match(TokenType.IDENTIFIER))
+
+        while reader.test(','):
+            reader.match(',')
+            names.append(reader.match(TokenType.IDENTIFIER))
+
+    return names
+
+
 def parse_declare(reader: Reader) -> Declare:
     """
     Parses a variable declaration statement (e.g. 'decl a, b;').
     """
 
-    vars = []
     reader.match('decl')
-
-    if reader.test(TokenType.IDENTIFIER):
-        vars.append(reader.match(TokenType.IDENTIFIER))
-
-        while reader.test(','):
-            reader.match(',')
-            vars.append(reader.match(TokenType.IDENTIFIER))
-
+    vars = parse_identifier_list(reader)
     reader.match(';')
 
     return Declare(vars)
@@ -166,35 +188,60 @@ def parse_func_decl(reader: Reader) -> FuncDecl:
     """
 
     name = reader.match(TokenType.IDENTIFIER)
-    params = []
-    code = []
 
     reader.match('(')
-
-    if reader.test(TokenType.IDENTIFIER):
-        params.append(reader.match(TokenType.IDENTIFIER))
-
-        while reader.test(','):
-            reader.match(',')
-            params.append(reader.match(TokenType.IDENTIFIER))
-
+    params = parse_identifier_list(reader)
     reader.match(')')
+
     reader.match('{')
-
-    while reader.test_set(FIRST_SET['stmt']):
-        code.append(parse_statement(reader))
-
+    code = parse_statement_list(reader)
     reader.match('}')
 
     return FuncDecl(name, params, code)
 
-def parse_statement(reader) -> Stmt:
+
+def parse_if(reader: Reader) -> If:
+    """
+    Parses an if statement.
+
+    The returned value contains an empty 'else' code block if there is no 'else' clause attached to the 'if' construct.
+    """
+
+    reader.match('if')
+
+    reader.match('(')
+    cond = parse_exp(reader)
+    reader.match(')')
+
+    reader.match('{')
+    if_code = parse_statement_list(reader)
+    reader.match('}')
+
+    # 'else' clause
+    #
+    # technically 'else' should be left factored out into another production
+    # rule, but since 'else' is the only production whose terminal has an
+    # optional suffix in our grammar, it is probably simpler to just make
+    # this as an exception and not create a dedicated 'FIRST_SET' entry
+    else_code = []
+    if reader.test('else'):
+        reader.match('else')
+        reader.match('{')
+        else_code = parse_statement_list(reader)
+        reader.match('}')
+
+    return If(cond, if_code, else_code)
+
+
+def parse_statement(reader: Reader) -> Stmt:
     """
     Parses a statement (stmt).
     Can be any of 'if', 'while', 'declare', 'assign', 'return', 'break',
     'continue' or 'exp'.
     """
 
+    # since we aren't using a LL(1) table for complexity concerns, we use
+    # if/else to accomplish the same idea
     if reader.test_set(FIRST_SET['if']):
         pass
 
@@ -205,19 +252,26 @@ def parse_statement(reader) -> Stmt:
         return parse_declare(reader)
 
     elif reader.test_set(FIRST_SET['assign']):
-        pass
+        name = reader.match(TokenType.IDENTIFIER)
+        reader.match('=')
+        exp = parse_exp(reader)
+        reader.match(';')
+        return Assign(name, exp)
 
     elif reader.test_set(FIRST_SET['return']):
         reader.match('return')
         exp = parse_exp(reader)
+        reader.match(';')
         return Return(exp)
 
     elif reader.test_set(FIRST_SET['break']):
         reader.match('break')
+        reader.match(';')
         return Break()
 
     elif reader.test_set(FIRST_SET['continue']):
         reader.match('continue')
+        reader.match(';')
         return Continue()
 
     elif reader.test_set(FIRST_SET['exp']):
