@@ -351,7 +351,12 @@ def parse_statement(reader: Reader) -> Stmt:
 
     elif reader.test_set(FIRST_SET['return']):
         reader.match('return')
-        exp = parse_exp(reader)
+
+        if reader.test_set(FIRST_SET['exp']):
+            exp = parse_exp(reader)
+        else:
+            exp = Literal('NONE')
+
         reader.match(';')
         return Return(exp)
 

@@ -280,6 +280,102 @@ CODE_FILES = {
                 ExpStmt(FuncCall('print', [Literal('"DONE"')]))
             ])
         ])
+    },
+    'pyramid.code': {
+        'tokens': [
+            ('main', TokenType.IDENTIFIER),
+            ('(', TokenType.SYMBOL),
+            (')', TokenType.SYMBOL),
+            ('{', TokenType.SYMBOL),
+            ('decl', TokenType.KEYWORD),
+            ('length', TokenType.IDENTIFIER),
+            (',', TokenType.SYMBOL),
+            ('counter', TokenType.IDENTIFIER),
+            (';', TokenType.SYMBOL),
+            ('length', TokenType.IDENTIFIER),
+            ('=', TokenType.OPERATOR),
+            ('input', TokenType.IDENTIFIER),
+            ('(', TokenType.SYMBOL),
+            ('"Enter length: "', TokenType.LITERAL),
+            (')', TokenType.SYMBOL),
+            (';', TokenType.SYMBOL),
+            ('pyramid', TokenType.IDENTIFIER),
+            ('(', TokenType.SYMBOL),
+            ('length', TokenType.IDENTIFIER),
+            (')', TokenType.SYMBOL),
+            (';', TokenType.SYMBOL),
+            ('}', TokenType.SYMBOL),
+            ('pyramid', TokenType.IDENTIFIER),
+            ('(', TokenType.SYMBOL),
+            ('length', TokenType.IDENTIFIER),
+            (')', TokenType.SYMBOL),
+            ('{', TokenType.SYMBOL),
+            ('Counter', TokenType.IDENTIFIER),
+            ('=', TokenType.OPERATOR),
+            ('1', TokenType.LITERAL),
+            (';', TokenType.SYMBOL),
+            ('out_str', TokenType.IDENTIFIER),
+            ('=', TokenType.OPERATOR),
+            ('"*"', TokenType.LITERAL),
+            (';', TokenType.SYMBOL),
+            ('while', TokenType.KEYWORD),
+            ('(', TokenType.SYMBOL),
+            ('Counter', TokenType.IDENTIFIER),
+            ('<=', TokenType.OPERATOR),
+            ('length', TokenType.IDENTIFIER),
+            (')', TokenType.SYMBOL),
+            ('{', TokenType.SYMBOL),
+            ('print', TokenType.IDENTIFIER),
+            ('(', TokenType.SYMBOL),
+            ('out_str', TokenType.IDENTIFIER),
+            ('+', TokenType.OPERATOR),
+            ('"\\n"', TokenType.LITERAL),
+            (')', TokenType.SYMBOL),
+            (';', TokenType.SYMBOL),
+            ('out_str', TokenType.IDENTIFIER),
+            ('=', TokenType.OPERATOR),
+            ('out_str', TokenType.IDENTIFIER),
+            ('+', TokenType.OPERATOR),
+            ('"*"', TokenType.LITERAL),
+            (';', TokenType.SYMBOL),
+            ('Counter', TokenType.IDENTIFIER),
+            ('=', TokenType.OPERATOR),
+            ('counter', TokenType.IDENTIFIER),
+            ('+', TokenType.OPERATOR),
+            ('1', TokenType.LITERAL),
+            (';', TokenType.SYMBOL),
+            ('}', TokenType.SYMBOL),
+            ('return', TokenType.KEYWORD),
+            (';', TokenType.SYMBOL),
+            ('}', TokenType.SYMBOL)
+        ],
+        'ast': Program([
+            FuncDecl('main', [], [
+                Declare(['length', 'counter']),
+                Assign('length', FuncCall('input', [
+                    Literal('"Enter length: "')
+                ])),
+                ExpStmt(FuncCall('pyramid', [VarExp('length')]))
+            ]),
+            FuncDecl('pyramid', ['length'], [
+                Assign('Counter', Literal('1')),
+                Assign('out_str', Literal('"*"')),
+                While(BinOp('<=', VarExp('Counter'), VarExp('length')), [
+                    ExpStmt(FuncCall('print', [
+                        BinOp('+', VarExp('out_str'), Literal('"\\n"'))
+                    ])),
+                    Assign('out_str', BinOp('+',
+                        VarExp('out_str'),
+                        Literal('"*"')
+                    )),
+                    Assign('Counter', BinOp('+',
+                        VarExp('counter'),
+                        Literal('1')
+                    ))
+                ]),
+                Return(Literal('NONE'))
+            ])
+        ])
     }
 }
 

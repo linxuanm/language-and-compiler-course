@@ -1,0 +1,20 @@
+main() {
+    decl length, counter;
+
+    length =   input("Enter length: ");
+
+    pyramid(length);
+}
+
+pyramid(length) {
+     Counter  =  1;
+    out_str  =   "*";
+
+    while (Counter  <=   length) {
+            print(out_str + "\n");
+          out_str = out_str    + "*";
+         Counter = counter + 1;
+    }
+
+         return;
+}
