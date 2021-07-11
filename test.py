@@ -376,6 +376,78 @@ CODE_FILES = {
                 Return(Literal('NONE'))
             ])
         ])
+    },
+    'factorial.code': {
+        'tokens': [
+            ('main', TokenType.IDENTIFIER),
+            ('(', TokenType.SYMBOL),
+            (')', TokenType.SYMBOL),
+            ('{', TokenType.SYMBOL),
+            ('print', TokenType.IDENTIFIER),
+            ('(', TokenType.SYMBOL),
+            ('factorio', TokenType.IDENTIFIER),
+            ('(', TokenType.SYMBOL),
+            ('str_to_int', TokenType.IDENTIFIER),
+            ('(', TokenType.SYMBOL),
+            ('input', TokenType.IDENTIFIER),
+            ('(', TokenType.SYMBOL),
+            ('"Get a number: "', TokenType.LITERAL),
+            (')', TokenType.SYMBOL),
+            (')', TokenType.SYMBOL),
+            (')', TokenType.SYMBOL),
+            (')', TokenType.SYMBOL),
+            (';', TokenType.SYMBOL),
+            ('}', TokenType.SYMBOL),
+            ('factorio', TokenType.IDENTIFIER),
+            ('(', TokenType.SYMBOL),
+            ('x', TokenType.IDENTIFIER),
+            (')', TokenType.SYMBOL),
+            ('{', TokenType.SYMBOL),
+            ('if', TokenType.KEYWORD),
+            ('(', TokenType.SYMBOL),
+            ('x', TokenType.IDENTIFIER),
+            ('<=', TokenType.OPERATOR),
+            ('1', TokenType.LITERAL),
+            (')', TokenType.SYMBOL),
+            ('{', TokenType.SYMBOL),
+            ('return', TokenType.KEYWORD),
+            ('1', TokenType.LITERAL),
+            (';', TokenType.SYMBOL),
+            ('}', TokenType.SYMBOL),
+            ('return', TokenType.KEYWORD),
+            ('x', TokenType.IDENTIFIER),
+            ('*', TokenType.OPERATOR),
+            ('factorio', TokenType.IDENTIFIER),
+            ('(', TokenType.SYMBOL),
+            ('x', TokenType.IDENTIFIER),
+            ('-', TokenType.OPERATOR),
+            ('1', TokenType.LITERAL),
+            (')', TokenType.SYMBOL),
+            (';', TokenType.SYMBOL),
+            ('}', TokenType.SYMBOL)
+        ],
+        'ast': Program([
+            FuncDecl('main', [], [
+                ExpStmt(FuncCall('print', [
+                    FuncCall('factorio', [
+                        FuncCall('str_to_int', [
+                            FuncCall('input', [Literal('"Get a number: "')])
+                        ])
+                    ])
+                ]))
+            ]),
+            FuncDecl('factorio', ['x'], [
+                If(BinOp('<=', VarExp('x'), Literal('1')), [
+                    Return(Literal('1'))
+                ], []),
+                Return(BinOp('*',
+                    VarExp('x'),
+                    FuncCall('factorio', [
+                        BinOp('-', VarExp('x'), Literal('1'))
+                    ])
+                ))
+            ])
+        ])
     }
 }
 

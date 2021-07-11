@@ -1,0 +1,8 @@
+main() {
+    print(factorio(str_to_int(input("Get a number: "))));
+}
+
+factorio(x) {
+    if (x <= 1) {return 1;}
+    return x * factorio(x - 1);
+}
