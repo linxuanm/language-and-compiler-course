@@ -1,4 +1,4 @@
-import typing
+from typing import Callable
 
 from day1_lexer import TokenType, ParserError
 
@@ -7,36 +7,46 @@ from .parser import FIRST_SET, Reader, parse_exp_list
 
 
 def parse_exp(reader: Reader) -> Exp:
-    return parse_product(reader)
+    return parse_term(reader)
 
 
-def parse_product(reader: Reader) -> Exp:
+def exp_parser_template(
+        first_sym: set,
+        upper: Callable[[Reader], Exp]
+    ) -> Callable[[Reader], Exp]:
     """
-    Parses an infix operation whose precedence is the same as 'mul' and 'div'.
-
-    Check source_grammar.cf for a definitive grammar guide. Note the
-    elimination of left recursions.
+    Just a function builder.
     """
 
-    def parse_partial(reader: Reader) -> typing.Callable[[Exp], Exp]:
-        # since there is no AST node directly corresponding to the eliminated
-        # version of a binary operation, a bit of currying is used here for
-        # generalizablity
+    def parse_infix(reader: Reader) -> Exp:
+        """
+        Parses an infix operation whose precedence is the same as 'mul' and 'div'.
 
-        if not reader.test_set({'*', '/'}):
-            return lambda x: x
+        Check source_grammar.cf for a definitive grammar guide. Note the
+        elimination of left recursions.
+        """
 
-        symbol = reader.match(TokenType.OPERATOR)
-        end_exp = parse_exp_imm(reader)
+        def parse_partial(reader: Reader) -> Callable[[Exp], Exp]:
+            # since there is no AST node directly corresponding to the eliminated
+            # version of a binary operation, a bit of currying is used here for
+            # generalizablity
 
-        tail = parse_partial(reader)
-        build = lambda start, sym=symbol, end=end_exp: BinOp(sym, start, end)
+            if not reader.test_set(first_sym):
+                return lambda x: x
 
-        return lambda x: tail(build(x))
+            sym = reader.match(TokenType.OPERATOR)
+            end = upper(reader)
 
-    start_exp = parse_exp_imm(reader) # non-recursive non-terminals
+            tail = parse_partial(reader)
+            build = lambda start, sym=sym, end=end: BinOp(sym, start, end)
 
-    return parse_partial(reader)(start_exp)
+            return lambda x: tail(build(x))
+
+        start_exp = upper(reader) # non-recursive non-terminals
+
+        return parse_partial(reader)(start_exp)
+
+    return parse_infix
 
 
 def parse_exp_imm(reader: Reader) -> Exp:
@@ -56,7 +66,7 @@ def parse_exp_imm(reader: Reader) -> Exp:
         return Literal(reader.match(TokenType.LITERAL))
 
     elif reader.test_set(FIRST_SET['unop_exp']):
-        return UnOp(reader.match(TokenType.OPERATOR), parse_exp(reader))
+        return UnOp(reader.match(TokenType.OPERATOR), parse_exp_imm(reader))
 
     elif reader.test_set(FIRST_SET['identifier']):
         name = reader.match(TokenType.IDENTIFIER)
@@ -76,3 +86,7 @@ def parse_exp_imm(reader: Reader) -> Exp:
         reader.match(')')
 
         return value
+
+
+parse_term = exp_parser_template({'*', '/'}, parse_exp_imm)
+parse_numeric = exp_parser_template({'+', '-'}, parse_term)
