@@ -296,7 +296,7 @@ def assert_equal(output, expected, meta=''):
         bad(f'Expected {expected}\n')
         bad(f'Instead got {output}\n')
 
-        abort()
+        #abort()
 
 
 def wrap_title(test_name):

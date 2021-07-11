@@ -3,13 +3,9 @@ main() {
     a = 0;
     b = 1;
 
-    while (b < 1000 && (True || True) && True) {
-        a = a + b;
-        b = a - b;
-        a = a - b;
-        b = a + b;
+    while (b * 5 / 10 * a) {
 
-        print(b + 0);
+        print(b);
     }
 
     print("DONE");

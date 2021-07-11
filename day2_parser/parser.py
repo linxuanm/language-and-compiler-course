@@ -18,13 +18,16 @@ FIRST_SET = {
     'break': {'break'},
     'continue': {'continue'},
     'unop_exp': {'-', '!'},
+    'paren_exp': {'('},
     'iden_start': {TokenType.IDENTIFIER} # left factors assign and exp
 }
 FIRST_SET['assign'] = FIRST_SET['identifier']
 FIRST_SET['decl_func'] = FIRST_SET['identifier']
 FIRST_SET['program'] = FIRST_SET['decl_func'].union(FIRST_SET['declare'])
-FIRST_SET['exp'] = FIRST_SET['imm_exp'].union(FIRST_SET['unop_exp'])
-FIRST_SET['stmt'] = functools.reduce(lambda a, b: a.union(b), [
+FIRST_SET['exp'] = functools.reduce(set.union, [
+    FIRST_SET[i] for i in ('imm_exp', 'unop_exp', 'paren_exp')
+])
+FIRST_SET['stmt'] = functools.reduce(set.union, [
     FIRST_SET[i] for i in (
         'if', 'while', 'declare', 'assign',
         'return', 'break', 'continue', 'exp'
