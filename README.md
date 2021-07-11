@@ -85,7 +85,7 @@ Our language has 6 token types:
 - `WHITESPACE`: a sequence of whitespace characters (` `, `\n`, `\t`)
 
 Some notes:
-- An `IDENTIFIER` cannot take the name of an existing `KEYWORD` (raises a SyntaxError)
+- An `IDENTIFIER` cannot take the name of an existing `KEYWORD`
 - `SYMBOL` is for syntax structure only, which is why `=` classifies as an `OPERATOR`
 
 ## Parser
