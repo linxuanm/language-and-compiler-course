@@ -7,7 +7,7 @@ from .parser import FIRST_SET, Reader, parse_exp_list
 
 
 def parse_exp(reader: Reader) -> Exp:
-    return parse_term(reader)
+    return parse_or(reader)
 
 
 def exp_parser_template(
@@ -90,3 +90,8 @@ def parse_exp_imm(reader: Reader) -> Exp:
 
 parse_term = exp_parser_template({'*', '/'}, parse_exp_imm)
 parse_numeric = exp_parser_template({'+', '-'}, parse_term)
+parse_compare = exp_parser_template({
+    '==', '!=', '<=', '>=', '<', '>'
+}, parse_numeric)
+parse_and = exp_parser_template({'&&'}, parse_compare)
+parse_or = exp_parser_template({'||'}, parse_and)

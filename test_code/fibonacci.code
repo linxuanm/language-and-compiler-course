@@ -3,7 +3,7 @@ main() {
     a = 0;
     b = 1;
 
-    while (b < 1000 && (True || True) && True) {
+    while (b < 1000 && (TRUE || FALSE) && TRUE) {
         a = a + b;
         b = a - b;
         a = a - b;

@@ -207,12 +207,12 @@ CODE_FILES = {
             ('1000', TokenType.LITERAL),
             ('&&', TokenType.OPERATOR),
             ('(', TokenType.SYMBOL),
-            ('True', TokenType.IDENTIFIER),
+            ('TRUE', TokenType.LITERAL),
             ('||', TokenType.OPERATOR),
-            ('True', TokenType.IDENTIFIER),
+            ('FALSE', TokenType.LITERAL),
             (')', TokenType.SYMBOL),
             ('&&', TokenType.OPERATOR),
-            ('True', TokenType.IDENTIFIER),
+            ('TRUE', TokenType.LITERAL),
             (')', TokenType.SYMBOL),
             ('{', TokenType.SYMBOL),
             ('a', TokenType.IDENTIFIER),
@@ -254,7 +254,32 @@ CODE_FILES = {
             (';', TokenType.SYMBOL),
             ('}', TokenType.SYMBOL)
         ],
-        'ast': None
+        'ast': Program([
+            FuncDecl('main', [], [
+                Declare(['a', 'b']),
+                Assign('a', Literal('0')),
+                Assign('b', Literal('1')),
+                While(
+                    BinOp('&&',
+                        BinOp('&&',
+                            BinOp('<', VarExp('b'), Literal('1000')),
+                            BinOp('||', Literal('TRUE'), Literal('FALSE'))
+                        ),
+                        Literal('TRUE')
+                    ),
+                    [
+                        Assign('a', BinOp('+', VarExp('a'), VarExp('b'))),
+                        Assign('b', BinOp('-', VarExp('a'), VarExp('b'))),
+                        Assign('a', BinOp('-', VarExp('a'), VarExp('b'))),
+                        Assign('b', BinOp('+', VarExp('a'), VarExp('b'))),
+                        ExpStmt(FuncCall('print', [
+                            BinOp('+', VarExp('b'), Literal('0'))
+                        ]))
+                    ]
+                ),
+                ExpStmt(FuncCall('print', [Literal('"DONE"')]))
+            ])
+        ])
     }
 }
 
