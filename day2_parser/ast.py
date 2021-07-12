@@ -1,5 +1,4 @@
 from day3_semantic_analysis import SemanticContext
-from day4_code_generation import CodeGenContext
 
 
 __all__ = [
@@ -53,8 +52,8 @@ class AST:
         The analysis pass whether this node contains valid code.
         Performs semantic validation according to the given checking context.
 
-        Other analytic operations, such as optimization, are also executed
-        here.
+        After the analysis pass, an AST node should have all the information it
+        need to generate its bytecode directly.
 
         Throws an according error if the validation does not pass.
         """
@@ -71,7 +70,7 @@ class AST:
 
         raise NotImplementedError
 
-    def generate_code(self, context: CodeGenContext) -> [str]:
+    def generate_code(self) -> [str]:
         """
         Generates the code for this node according to the surronding context.
         Returns the list of bytecode for this node.
@@ -281,9 +280,9 @@ class BinOp(Exp):
     def code_length(self):
         return self.left.code_length() + self.right.code_length() + 1
 
-    def generate_code(self, context: CodeGenContext) -> [str]:
-        left_code = self.left.generate_code(context)
-        right_code = self.right.generate_code(context)
+    def generate_code(self) -> [str]:
+        left_code = self.left.generate_code()
+        right_code = self.right.generate_code()
 
         return left_code + right_code + [BINOP_CODE[self.op]]
 
@@ -313,8 +312,8 @@ class UnOp(Exp):
     def code_length(self):
         return self.value.code_length() + 1
 
-    def generate_code(self, context: CodeGenContext):
-        return self.value.generate_code(context) + [UNOP_CODE[self.op]]
+    def generate_code(self):
+        return self.value.generate_code() + [UNOP_CODE[self.op]]
 
     def __str__(self):
         return f'{self.op}({self.value})'
