@@ -1,26 +1,4 @@
-from day3_semantic_analysis import SemanticContext
-
-
-__all__ = [
-    'Exp',
-    'Stmt',
-    'Decl',
-    'Declare',
-    'Assign',
-    'Return',
-    'Break',
-    'Continue',
-    'If',
-    'While',
-    'FuncDecl',
-    'Program',
-    'BinOp',
-    'UnOp',
-    'Literal',
-    'VarExp',
-    'FuncCall',
-    'ExpStmt'
-]
+from day3_semantic_analysis.semantic_context import SemanticContext
 
 
 BINOP_CODE = {

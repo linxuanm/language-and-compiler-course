@@ -9,7 +9,7 @@ import functools
 
 import day1_lexer as lexer
 import day2_parser as parser
-import day3_semantic_analysis as semantic
+import day3_semantic_analysis.semantics as semantics
 import day4_code_generation as codegen
 import day5_virtual_machine as machine
 
@@ -533,7 +533,15 @@ def test_parser(file_ref, prev_tokens):
     return asts
 
 
+@wrap_title('Semantic Analysis')
+def test_analysis(asts):
+    for i in asts:
+        semantics.analysis(asts[i])
+        good(f'Test Passed: {i}')
+
+
 tokens = test_lexer(CODE_FILES)
 asts = test_parser(CODE_FILES, tokens)
+test_analysis(asts)
 
 good('ALL TEST PASSED')
