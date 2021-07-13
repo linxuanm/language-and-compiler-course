@@ -127,6 +127,42 @@ def parse_other(reader):
     // ... and so on
 ```
 
+## Semantic Analysis
+
+Semantic analysis checks the validity of the abstract syntax tree, and detects errors such as undeclared variables, duplicate declarations and misplaced control flow conditions (such as `break` and `continue` outside of a loop).
+
+Errors that need to be detected in your homwork are:
+- `UndeclaredIdentifierError`: raised when an undeclared variable/function is used
+- `DuplicateDeclarationError`: raised when an identifier is declared multiple times in the same scope
+- `MisplacedControlFlowError`: raised when a `break` or `continue` statement is placed outside of a loop
+
+### Scope
+
+A function, `if` statement, and `while` loop all introduce a new scope on the scope stack:
+
+```
+decl foo;
+
+main() {
+    decl foo;
+
+    if (TRUE) {
+        decl foo;
+
+        while (FALSE) {
+            decl foo;
+        }
+    }
+}
+```
+
+The above code is allowed, as there are no duplicate declarations of the same identifier within the same scope. The following would raise a `MisplacedControlFlowError`:
+
+```
+decl foo;
+decl bar, foo;
+```
+
 ## Virtual Machine
 
 The runtime of our language consists of a simple stack-based virtual machine with a custom instruction set.
