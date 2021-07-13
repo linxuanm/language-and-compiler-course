@@ -163,6 +163,11 @@ decl foo;
 decl bar, foo;
 ```
 
+### Referencing & Naming Rules
+
+- A variable `x` associates to the declaration whose scope is closest to the current usage of `x`
+- Functions and variables can have the same name, as there is no ambiguity between the usage of the two
+
 ## Virtual Machine
 
 The runtime of our language consists of a simple stack-based virtual machine with a custom instruction set.
