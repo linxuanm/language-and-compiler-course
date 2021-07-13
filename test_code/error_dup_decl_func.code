@@ -1,0 +1,8 @@
+main() {
+    print("hi");
+}
+
+main() {
+    decl a;
+    a = 10;
+}

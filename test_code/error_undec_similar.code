@@ -1,0 +1,5 @@
+decl Foo;
+
+main() {
+    foo = 10;
+}

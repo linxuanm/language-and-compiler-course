@@ -1,0 +1,11 @@
+main() {
+    decl a, b;
+    a = 10;
+    b = 20;
+
+    while (a < b) {
+        a = a + 2;
+    }
+
+    print(minus(a, b));
+}
