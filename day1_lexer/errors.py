@@ -33,3 +33,10 @@ class MisplacedControlFlowError(SyntaxError):
     of a loop).
     """
     pass
+
+
+class InvalidParametersError(SyntaxError):
+    """
+    When a function is invoked with the incorrect amount of parameters.
+    """
+    pass

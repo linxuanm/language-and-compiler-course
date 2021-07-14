@@ -1,4 +1,8 @@
-from day3_semantic_analysis.semantic_context import SemanticContext
+from day3_semantic_analysis.semantic_context import (
+    SemanticContext,
+    Scope,
+    GlobalScope
+)
 
 
 BINOP_CODE = {
@@ -231,6 +235,9 @@ class Program(AST):
     def __eq__(self, other):
         return type(other) == Program and \
                compare_unordered(self.declarations, other.declarations)
+
+    def analysis_pass(self, context: SemanticContext):
+        context.push_scope(GlobalScope())
 
 
 class BinOp(Exp):

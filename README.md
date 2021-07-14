@@ -135,6 +135,7 @@ Errors that need to be detected in your homwork are:
 - `UndeclaredIdentifierError`: raised when an undeclared variable/function is used
 - `DuplicateDeclarationError`: raised when an identifier is declared multiple times in the same scope
 - `MisplacedControlFlowError`: raised when a `break` or `continue` statement is placed outside of a loop
+- `InvalidParametersError`: raised when a function call has the incorrect amount of parameters
 
 ### Scope
 
