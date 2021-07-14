@@ -227,14 +227,16 @@ class Program(AST):
     """
 
     def __init__(self, declarations: [Decl]):
-        self.declarations = declarations
+        self.var_decl = [i for i in declarations if isinstance(i, Declare)]
+        self.func_decl = [i for i in declarations if isinstance(i, FuncDecl)]
 
     def __str__(self):
-        return f'Program({self.declarations})'
+        return f'Program({self.var_decl}, {self.func_decl})'
 
     def __eq__(self, other):
         return type(other) == Program and \
-               compare_unordered(self.declarations, other.declarations)
+               compare_unordered(self.var_decl, other.var_decl) and \
+               compare_unordered(self.func_decl, other.func_decl)
 
     def analysis_pass(self, context: SemanticContext):
         context.push_scope(GlobalScope())
