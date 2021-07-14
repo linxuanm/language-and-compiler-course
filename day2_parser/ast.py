@@ -105,7 +105,9 @@ class Declare(Stmt, Decl):
                compare_unordered(self.vars, other.vars)
 
     def analysis_pass(self, context: SemanticContext) -> None:
-        pass
+        curr = context.find_closest(lambda _: True)
+        for i in self.vars:
+            curr.add_var(i)
 
 
 class Assign(Stmt):

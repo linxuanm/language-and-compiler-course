@@ -449,6 +449,10 @@ CODE_FILES = {
             ])
         ])
     }
+
+}
+COMPILE_ERROR_FILES = {
+    'error_dup_decl_func.code': lexer.DuplicateDeclarationError
 }
 
 
@@ -489,7 +493,19 @@ def assert_equal(output, expected, meta=''):
         bad(f'Expected {expected}\n')
         bad(f'Instead got {output}\n')
 
-        #abort()
+        abort()
+
+
+def expect_error(runnable, error, meta=''):
+    try:
+        runnable()
+    except error:
+        good(f'Test Passed: {meta}')
+    else:
+        bad('Test Failed:')
+        bad(f'Expected error: {error.__name__}\n')
+
+        abort()
 
 
 def wrap_title(test_name):
@@ -540,8 +556,20 @@ def test_analysis(asts):
         good(f'Test Passed: {i}')
 
 
+def full_compile(path):
+    code = lexer.load_source_file(os.path.join(CODE_DIR, path))
+    tokens = lexer.lex(code)
+    ast = parser.parse(parser.Reader(tokens))
+
+
+def test_fail(files):
+    for i in files:
+        full_compile(i)
+
+
 tokens = test_lexer(CODE_FILES)
 asts = test_parser(CODE_FILES, tokens)
 test_analysis(asts)
+test_fail(COMPILE_ERROR_FILES)
 
 good('ALL TEST PASSED')
