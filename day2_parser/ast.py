@@ -29,7 +29,7 @@ class AST:
     The base class of all abstract syntax tree nodes.
     """
 
-    def analysis_pass(self, context: SemanticContext):
+    def analysis_pass(self, context: SemanticContext) -> None:
         """
         The analysis pass whether this node contains valid code.
         Performs semantic validation according to the given checking context.
@@ -42,7 +42,7 @@ class AST:
 
         raise NotImplementedError
 
-    def code_length(self):
+    def code_length(self) -> int:
         """
         Returns the length of the generated code of this node (recursive).
 
@@ -103,6 +103,9 @@ class Declare(Stmt, Decl):
     def __eq__(self, other):
         return type(other) == Declare and \
                compare_unordered(self.vars, other.vars)
+
+    def analysis_pass(self, context: SemanticContext) -> None:
+        pass
 
 
 class Assign(Stmt):
@@ -220,6 +223,17 @@ class FuncDecl(Decl):
                self.params == other.params and \
                self.code == other.code
 
+    def register(self, context: SemanticContext) -> None:
+        """
+        Registers a function to the global scope.
+
+        Neede prior to analysis pass to populate all declaration fields.
+        """
+
+        context.glob().add_func(self.func_name, self)
+
+    def analysis_pass(self, context: SemanticContext) -> None:
+        pass
 
 class Program(AST):
     """
@@ -240,6 +254,17 @@ class Program(AST):
 
     def analysis_pass(self, context: SemanticContext):
         context.push_scope(GlobalScope())
+
+        for i in self.var_decl:
+            i.analysis_pass(context)
+
+        for i in self.func_decl:
+            i.register(context)
+
+        for i in self.func_decl:
+            i.analysis_pass(context)
+
+        context.pop_scope()
 
 
 class BinOp(Exp):
