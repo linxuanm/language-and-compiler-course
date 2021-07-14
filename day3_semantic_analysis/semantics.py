@@ -3,8 +3,9 @@ from day1_lexer import (
     DuplicateDeclarationError,
     MisplacedControlFlowError
 )
-
 from day2_parser import *
+
+from .semantic_context import SemanticContext
 
 
 def analysis(node: Program):
@@ -15,4 +16,5 @@ def analysis(node: Program):
     code generation.
     """
 
-    pass
+    context = SemanticContext()
+    node.analysis_pass(context)
