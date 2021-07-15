@@ -452,7 +452,11 @@ CODE_FILES = {
 
 }
 COMPILE_ERROR_FILES = {
-    'error_dup_decl_func.code': lexer.DuplicateDeclarationError
+    'error_dup_decl_func.code': lexer.DuplicateDeclarationError,
+    'error_dup_decl_simple.code': lexer.DuplicateDeclarationError,
+    'error_dup_decl_stmt.code': lexer.DuplicateDeclarationError,
+    'error_undec_similar.code': lexer.UndeclaredIdentifierError,
+    'error_undec_simple.code': lexer.UndeclaredIdentifierError
 }
 
 
@@ -489,7 +493,7 @@ def assert_equal(output, expected, meta=''):
     if output == expected:
         good(f'Test Passed: {meta}')
     else:
-        bad('Test Failed:\n')
+        bad(f'Test Failed: {meta}\n')
         bad(f'Expected {expected}\n')
         bad(f'Instead got {output}\n')
 
@@ -502,7 +506,7 @@ def expect_error(runnable, error, meta=''):
     except error:
         good(f'Test Passed: {meta}')
     else:
-        bad('Test Failed:')
+        bad(f'Test Failed: {meta}')
         bad(f'Expected error: {error.__name__}\n')
 
         abort()
@@ -564,7 +568,7 @@ def full_compile(path):
 
 def test_fail(files):
     for i in files:
-        full_compile(i)
+        expect_error(lambda i=i: full_compile(i), files[i], i)
 
 
 tokens = test_lexer(CODE_FILES)

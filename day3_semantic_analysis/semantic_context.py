@@ -14,8 +14,9 @@ class Scope:
         since there is no distinction between the two on a node level).
         """
 
-        self.vars = set()
+        self.vars = {}
         self.meta = meta
+        self.counter = 0
 
     def has_var(self, name):
         return name in self.vars
@@ -27,7 +28,8 @@ class Scope:
                 'multiple times'
             )
 
-        self.vars.add(name)
+        self.vars[name] = self.counter
+        self.counter += 1
 
 
 class GlobalScope(Scope):
