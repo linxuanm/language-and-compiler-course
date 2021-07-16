@@ -7,5 +7,5 @@ main() {
         a = a + 2;
     }
 
-    print(minus(a, b));
+    print(minus(a, c));
 }

@@ -1,8 +1,12 @@
-from day1_lexer import UndeclaredIdentifierError, MisplacedControlFlowError
+from day1_lexer import (
+    UndeclaredIdentifierError,
+    MisplacedControlFlowError
+)
 from day3_semantic_analysis.semantic_context import (
     SemanticContext,
     Scope,
-    GlobalScope
+    GlobalScope,
+    NATIVE_FUNCS
 )
 
 
@@ -320,7 +324,12 @@ class Program(AST):
                compare_unordered(self.func_decl, other.func_decl)
 
     def analysis_pass(self, context: SemanticContext):
-        context.push_scope(GlobalScope(self))
+        global_scope = GlobalScope(self)
+
+        for name, params in NATIVE_FUNCS.items():
+            global_scope.add_func(name, FuncDecl(name, params, []))
+
+        context.push_scope(global_scope)
 
         for i in self.var_decl:
             i.analysis_pass(context)
@@ -441,7 +450,7 @@ class VarExp(Exp):
         scope = context.find_closest(lambda x, name=self.name: x.has_var(name))
         if scope is None:
             raise UndeclaredIdentifierError(
-                f'Variable {self.var} is not declared'
+                f'Variable {self.name} is not declared'
             )
 
 
@@ -464,6 +473,20 @@ class FuncCall(Exp):
 
     def analysis_pass(self, context: SemanticContext) -> None:
         scope = context.glob()
+        if not scope.has_func(self.name):
+            raise UndeclaredIdentifierError(
+                f'Function {self.name} is not declared'
+            )
+
+        func = scope.get_func(self.name)
+        if len(func.params) != len(self.params):
+            raise InvalidParametersError(
+                f'Function {self.name} takes {len(func.params)} arguments, '
+                f'but was called with {len(self.params)} arguments'
+            )
+
+        for i in self.params:
+            i.analysis_pass(context)
 
 
 class ExpStmt(Stmt):

@@ -1,6 +1,14 @@
 from day1_lexer import DuplicateDeclarationError
 
 
+# (func_name, params_count)
+NATIVE_FUNCS = {
+    'print': ['content'],
+    'input': ['message'],
+    'str_to_int': ['string']
+}
+
+
 class Scope:
     """
     A base class that acts as a scope.
@@ -52,6 +60,9 @@ class GlobalScope(Scope):
             )
 
         self.funcs[name] = func
+
+    def get_func(self, name):
+        return self.funcs[name]
 
 
 class SemanticContext:

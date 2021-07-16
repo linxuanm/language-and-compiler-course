@@ -460,7 +460,8 @@ COMPILE_ERROR_FILES = {
     'error_dup_decl_simple.code': lexer.DuplicateDeclarationError,
     'error_dup_decl_stmt.code': lexer.DuplicateDeclarationError,
     'error_undec_similar.code': lexer.UndeclaredIdentifierError,
-    'error_undec_simple.code': lexer.UndeclaredIdentifierError
+    'error_undec_simple.code': lexer.UndeclaredIdentifierError,
+    'error_undec_return.code': lexer.UndeclaredIdentifierError
 }
 
 
@@ -568,6 +569,7 @@ def full_compile(path):
     code = lexer.load_source_file(os.path.join(CODE_DIR, path))
     tokens = lexer.lex(code)
     ast = parser.parse(parser.Reader(tokens))
+    semantics.analysis(ast)
 
 
 def test_fail(files):
