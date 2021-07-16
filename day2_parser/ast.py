@@ -232,7 +232,7 @@ class If(Stmt):
         else_scope = Scope(self)
         context.push_scope(else_scope)
 
-        for i in self.if_code:
+        for i in self.else_code:
             i.analysis_pass(context)
 
         context.pop_scope()
@@ -512,7 +512,7 @@ class ExpStmt(Stmt):
 
 def compare_unordered(a, b):
     """
-    Compares two lists without considering its order.
+    Compares two lists without considering their order.
     Kinda ugly but AST nodes are not hashable.
     """
 

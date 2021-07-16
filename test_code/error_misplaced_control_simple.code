@@ -1,0 +1,10 @@
+main() {
+    decl a;
+    a = str_to_int(input("Hello: "));
+
+    if (a == 0) {
+        return;
+    } else {
+        break;
+    }
+}

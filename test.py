@@ -474,6 +474,8 @@ COMPILE_ERROR_FILES = {
     'error_undec_complex.code': lexer.UndeclaredIdentifierError,
     'error_undec_return.code': lexer.UndeclaredIdentifierError,
     'error_undec_func.code': lexer.UndeclaredIdentifierError,
+    'error_misplaced_control_simple.code': lexer.MisplacedControlFlowError,
+    'error_misplaced_control_complex.code': lexer.MisplacedControlFlowError,
     'error_invalid_param_simple.code': lexer.InvalidParametersError,
     'error_invalid_param_complex.code': lexer.InvalidParametersError,
     'error_invalid_param_native.code': lexer.InvalidParametersError

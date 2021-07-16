@@ -1,0 +1,20 @@
+main() {
+    decl a;
+    a = str_to_int(input("Hello: "));
+
+    while (a == 10) {
+        a = str_to_int(input("Hello: "));
+
+        if (a == 2) {
+            return 1;
+        } else {
+            continue;
+        }
+
+        print("Hello");
+    }
+
+    if (a == 20) {
+        continue;
+    }
+}
