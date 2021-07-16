@@ -214,6 +214,7 @@ class If(Stmt):
 
     def __eq__(self, other):
         return type(other) == If and \
+                self.cond == other.cond and \
                self.if_code == other.if_code and \
                self.else_code == other.else_code
 
