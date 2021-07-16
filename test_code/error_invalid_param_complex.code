@@ -1,0 +1,16 @@
+foo(a, b) {
+    return a + b;
+
+}
+
+
+
+
+
+
+
+
+bar() {
+    foo(20, 30, 40);
+    return 10;
+}

@@ -10,5 +10,7 @@ __all__ = [
     'LexerError',
     'ParserError',
     'UndeclaredIdentifierError',
-    'DuplicateDeclarationError'
+    'DuplicateDeclarationError',
+    'MisplacedControlFlowError'
+    'InvalidParametersError'
 ]

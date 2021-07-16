@@ -38,6 +38,9 @@ def lex(raw_code: str) -> [(str, TokenType)]:
         ]
     """
 
+    if not raw_code:
+        return []
+
     tokens = []
     while True:
 

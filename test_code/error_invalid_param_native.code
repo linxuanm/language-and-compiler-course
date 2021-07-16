@@ -1,0 +1,17 @@
+main() {
+    decl a, b, length;
+    a = 0;
+    b = 1;
+    length = str_to_int(input("hello: "), 2);
+
+    while (b < length && (TRUE || FALSE) && TRUE) {
+        a = a + b;
+        b = a - b;
+        a = a - b;
+        b = a + b;
+
+        print(b + 0);
+    }
+
+    print("DONE");
+}

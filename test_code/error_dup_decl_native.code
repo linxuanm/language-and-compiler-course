@@ -1,0 +1,13 @@
+    main() {
+        decl a, b;
+        decl c, d;
+
+        a = -20000;
+        b = -30000;
+
+        print( a * b);
+    }
+
+    print(msg) {
+        
+    }

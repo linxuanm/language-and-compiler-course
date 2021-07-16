@@ -459,9 +459,15 @@ COMPILE_ERROR_FILES = {
     'error_dup_decl_func.code': lexer.DuplicateDeclarationError,
     'error_dup_decl_simple.code': lexer.DuplicateDeclarationError,
     'error_dup_decl_stmt.code': lexer.DuplicateDeclarationError,
+    'error_dup_decl_native.code': lexer.DuplicateDeclarationError,
     'error_undec_similar.code': lexer.UndeclaredIdentifierError,
     'error_undec_simple.code': lexer.UndeclaredIdentifierError,
-    'error_undec_return.code': lexer.UndeclaredIdentifierError
+    'error_undec_complex.code': lexer.UndeclaredIdentifierError,
+    'error_undec_return.code': lexer.UndeclaredIdentifierError,
+    'error_undec_func.code': lexer.UndeclaredIdentifierError,
+    'error_invalid_param_simple.code': lexer.InvalidParametersError,
+    'error_invalid_param_complex.code': lexer.InvalidParametersError,
+    'error_invalid_param_native.code': lexer.InvalidParametersError
 }
 
 
@@ -572,6 +578,7 @@ def full_compile(path):
     semantics.analysis(ast)
 
 
+@wrap_title('Compile Error Check')
 def test_fail(files):
     for i in files:
         expect_error(lambda i=i: full_compile(i), files[i], i)

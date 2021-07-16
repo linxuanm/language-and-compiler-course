@@ -1,0 +1,7 @@
+calc_age(a, b) {
+    decl c_the_sum_of_a_and_b_and_this_is_a_long_name_oh_wow;
+
+    c_the_sum_of_a_and_b_and_this_is_a_long_name_oh_wow = a + b;
+
+    return inverse(c_the_sum_of_a_and_b_and_this_is_a_long_name_oh_wow);
+}

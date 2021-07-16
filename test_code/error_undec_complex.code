@@ -1,0 +1,17 @@
+main() {
+    decl a, b, c, temp;
+
+    a = 10;
+    b = 20;
+    c = 0;
+
+    while (c < 500 * 200) {
+        if (c == 200) {break;}
+
+        c = c * b + a;
+        a = a + b;
+        temp = a == b && b != c || a == c && n <= c;
+    }
+
+    return c;
+}

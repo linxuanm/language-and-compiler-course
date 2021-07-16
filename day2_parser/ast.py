@@ -1,6 +1,7 @@
 from day1_lexer import (
     UndeclaredIdentifierError,
-    MisplacedControlFlowError
+    MisplacedControlFlowError,
+    InvalidParametersError
 )
 from day3_semantic_analysis.semantic_context import (
     SemanticContext,
