@@ -283,15 +283,15 @@ CODE_FILES = {
     },
     'pyramid.code': {
         'tokens': [
+            ('decl', TokenType.KEYWORD),
+            ('length', TokenType.IDENTIFIER),
+            (',', TokenType.SYMBOL),
+            ('Counter', TokenType.IDENTIFIER),
+            (';', TokenType.SYMBOL),
             ('main', TokenType.IDENTIFIER),
             ('(', TokenType.SYMBOL),
             (')', TokenType.SYMBOL),
             ('{', TokenType.SYMBOL),
-            ('decl', TokenType.KEYWORD),
-            ('length', TokenType.IDENTIFIER),
-            (',', TokenType.SYMBOL),
-            ('counter', TokenType.IDENTIFIER),
-            (';', TokenType.SYMBOL),
             ('length', TokenType.IDENTIFIER),
             ('=', TokenType.OPERATOR),
             ('input', TokenType.IDENTIFIER),
@@ -310,6 +310,9 @@ CODE_FILES = {
             ('length', TokenType.IDENTIFIER),
             (')', TokenType.SYMBOL),
             ('{', TokenType.SYMBOL),
+            ('decl', TokenType.KEYWORD),
+            ('out_str', TokenType.IDENTIFIER),
+            (';', TokenType.SYMBOL),
             ('Counter', TokenType.IDENTIFIER),
             ('=', TokenType.OPERATOR),
             ('1', TokenType.LITERAL),
@@ -340,7 +343,7 @@ CODE_FILES = {
             (';', TokenType.SYMBOL),
             ('Counter', TokenType.IDENTIFIER),
             ('=', TokenType.OPERATOR),
-            ('counter', TokenType.IDENTIFIER),
+            ('Counter', TokenType.IDENTIFIER),
             ('+', TokenType.OPERATOR),
             ('1', TokenType.LITERAL),
             (';', TokenType.SYMBOL),
@@ -350,14 +353,15 @@ CODE_FILES = {
             ('}', TokenType.SYMBOL)
         ],
         'ast': Program([
+            Declare(['length', 'Counter']),
             FuncDecl('main', [], [
-                Declare(['length', 'counter']),
                 Assign('length', FuncCall('input', [
                     Literal('"Enter length: "')
                 ])),
                 ExpStmt(FuncCall('pyramid', [VarExp('length')]))
             ]),
             FuncDecl('pyramid', ['length'], [
+                Declare(['out_str']),
                 Assign('Counter', Literal('1')),
                 Assign('out_str', Literal('"*"')),
                 While(BinOp('<=', VarExp('Counter'), VarExp('length')), [
@@ -369,7 +373,7 @@ CODE_FILES = {
                         Literal('"*"')
                     )),
                     Assign('Counter', BinOp('+',
-                        VarExp('counter'),
+                        VarExp('Counter'),
                         Literal('1')
                     ))
                 ]),

@@ -1,5 +1,7 @@
+decl length, Counter;
+
 main() {
-    decl length, counter;
+    
 
     length =   input("Enter length: ");
 
@@ -7,13 +9,14 @@ main() {
 }
 
 pyramid(length) {
+    decl out_str;
      Counter  =  1;
     out_str  =   "*";
 
     while (Counter  <=   length) {
             print(out_str + "\n");
           out_str = out_str    + "*";
-         Counter = counter + 1;
+         Counter = Counter + 1;
     }
 
          return;

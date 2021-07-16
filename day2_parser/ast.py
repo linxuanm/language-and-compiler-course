@@ -1,3 +1,4 @@
+from day1_lexer import UndeclaredIdentifierError, MisplacedControlFlowError
 from day3_semantic_analysis.semantic_context import (
     SemanticContext,
     Scope,
@@ -127,6 +128,15 @@ class Assign(Stmt):
                self.var == other.var and \
                self.value == other.value
 
+    def analysis_pass(self, context: SemanticContext) -> None:
+        scope = context.find_closest(lambda x, var=self.var: x.has_var(var))
+        if scope is None:
+            raise UndeclaredIdentifierError(
+                f'Variable {self.var} is not declared'
+            )
+
+        self.value.analysis_pass(context)
+
 
 class Return(Stmt):
     """
@@ -143,6 +153,9 @@ class Return(Stmt):
         return type(other) == Return and \
                self.value == other.value
 
+    def analysis_pass(self, context: SemanticContext) -> None:
+        self.value.analysis_pass(context)
+
 
 class Break(Stmt):
     """
@@ -155,6 +168,12 @@ class Break(Stmt):
     def __eq__(self, other):
         return type(other) == Break
 
+    def analysis_pass(self, context: SemanticContext) -> None:
+        scope = context.find_closest(lambda x: isinstance(x.node, While))
+
+        if scope is None:
+            raise MisplacedControlFlowError('Break outside of loop')
+
 
 class Continue(Stmt):
     """
@@ -162,6 +181,12 @@ class Continue(Stmt):
     """
     def __str__(self):
         return 'Continue'
+
+    def analysis_pass(self, context: SemanticContext) -> None:
+        scope = context.find_closest(lambda x: isinstance(x.node, While))
+
+        if scope is None:
+            raise MisplacedControlFlowError('Continue outside of loopp')
 
 
 class If(Stmt):
@@ -187,6 +212,25 @@ class If(Stmt):
                self.if_code == other.if_code and \
                self.else_code == other.else_code
 
+    def analysis_pass(self, context: SemanticContext) -> None:
+        self.cond.analysis_pass(context)
+
+        if_scope = Scope(self)
+        context.push_scope(if_scope)
+
+        for i in self.if_code:
+            i.analysis_pass(context)
+
+        context.pop_scope()
+
+        else_scope = Scope(self)
+        context.push_scope(else_scope)
+
+        for i in self.if_code:
+            i.analysis_pass(context)
+
+        context.pop_scope()
+
 
 class While(Stmt):
     """
@@ -204,6 +248,17 @@ class While(Stmt):
         return type(other) == While and \
                self.cond == other.cond and \
                self.code == other.code
+
+    def analysis_pass(self, context: SemanticContext) -> None:
+        self.cond.analysis_pass(context)
+
+        scope = Scope(self)
+        context.push_scope(scope)
+
+        for i in self.code:
+            i.analysis_pass(context)
+
+        context.pop_scope()
 
 
 class FuncDecl(Decl):
@@ -235,7 +290,17 @@ class FuncDecl(Decl):
         context.glob().add_func(self.func_name, self)
 
     def analysis_pass(self, context: SemanticContext) -> None:
-        pass
+        scope = Scope(self)
+
+        for i in self.params:
+            scope.add_var(i)
+
+        context.push_scope(scope)
+        for i in self.code:
+            i.analysis_pass(context)
+
+        context.pop_scope()
+
 
 class Program(AST):
     """
@@ -255,7 +320,7 @@ class Program(AST):
                compare_unordered(self.func_decl, other.func_decl)
 
     def analysis_pass(self, context: SemanticContext):
-        context.push_scope(GlobalScope())
+        context.push_scope(GlobalScope(self))
 
         for i in self.var_decl:
             i.analysis_pass(context)
@@ -353,6 +418,9 @@ class Literal(Exp):
         return type(other) == Literal and \
                self.value == other.value
 
+    def analysis_pass(self, context: SemanticContext) -> None:
+        pass
+
 
 class VarExp(Exp):
     """
@@ -368,6 +436,13 @@ class VarExp(Exp):
     def __eq__(self, other):
         return type(other) == VarExp and \
                self.name == other.name
+
+    def analysis_pass(self, context: SemanticContext) -> None:
+        scope = context.find_closest(lambda x, name=self.name: x.has_var(name))
+        if scope is None:
+            raise UndeclaredIdentifierError(
+                f'Variable {self.var} is not declared'
+            )
 
 
 class FuncCall(Exp):
@@ -387,6 +462,9 @@ class FuncCall(Exp):
                self.name == other.name and \
                self.params == other.params
 
+    def analysis_pass(self, context: SemanticContext) -> None:
+        scope = context.glob()
+
 
 class ExpStmt(Stmt):
     """
@@ -402,6 +480,9 @@ class ExpStmt(Stmt):
     def __eq__(self, other):
         return type(other) == ExpStmt and \
                self.value == other.value
+
+    def analysis_pass(self, context: SemanticContext) -> None:
+        self.value.analysis_pass(context)
 
 
 def compare_unordered(a, b):

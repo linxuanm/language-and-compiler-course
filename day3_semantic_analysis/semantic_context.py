@@ -6,17 +6,10 @@ class Scope:
     A base class that acts as a scope.
     """
 
-    def __init__(self, meta=(None, '')):
-        """
-        meta is used as a hacky way to store information about the
-        corresponding AST node. Its first element corresponds to the actual
-        node, while the second element stores extra information (e.g. if/else
-        since there is no distinction between the two on a node level).
-        """
-
+    def __init__(self, node=None):
         self.vars = {}
-        self.meta = meta
         self.counter = 0
+        self.node = node
 
     def has_var(self, name):
         return name in self.vars
@@ -31,6 +24,12 @@ class Scope:
         self.vars[name] = self.counter
         self.counter += 1
 
+    def __repr__(self):
+        return str(self)
+
+    def __str__(self):
+        return f'Scope({type(self.node).__name__}, {self.vars})'
+
 
 class GlobalScope(Scope):
     """
@@ -38,8 +37,8 @@ class GlobalScope(Scope):
     declarations.
     """
 
-    def __init__(self, meta=(None, '')):
-        super(GlobalScope, self).__init__(meta)
+    def __init__(self, program):
+        super(GlobalScope, self).__init__(program)
         self.funcs = {}
 
     def has_func(self, name):
