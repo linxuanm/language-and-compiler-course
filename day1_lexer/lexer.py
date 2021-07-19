@@ -42,7 +42,7 @@ def lex(raw_code: str) -> [(str, TokenType)]:
         return []
 
     tokens = []
-    while True:
+    while raw_code:
 
         for k, v in TOKEN_REGEX.items():
 
@@ -60,5 +60,4 @@ def lex(raw_code: str) -> [(str, TokenType)]:
         else:
             raise LexerError('No tokens found at ' + raw_code)
 
-        if not raw_code:
-            return tokens
+    return tokens
