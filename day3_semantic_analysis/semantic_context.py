@@ -14,9 +14,9 @@ class Scope:
     A base class that acts as a scope.
     """
 
-    def __init__(self, node=None):
+    def __init__(self, node=None, counter=0):
         self.vars = {}
-        self.counter = 0
+        self.counter = counter
         self.node = node
 
     def has_var(self, name):
@@ -31,6 +31,9 @@ class Scope:
 
         self.vars[name] = self.counter
         self.counter += 1
+
+    def get_node(self):
+        return self.node
 
     def __repr__(self):
         return str(self)

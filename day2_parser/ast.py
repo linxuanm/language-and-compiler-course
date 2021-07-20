@@ -115,6 +115,9 @@ class Declare(Stmt, Decl):
         for i in self.vars:
             curr.add_var(i)
 
+    def code_length(self) -> int:
+        return 0 # declaration is purely compile-time
+
 
 class Assign(Stmt):
     """
@@ -142,6 +145,9 @@ class Assign(Stmt):
 
         self.value.analysis_pass(context)
 
+    def code_length(self) -> int:
+        return 1 + self.value.code_length()
+
 
 class Return(Stmt):
     """
@@ -161,6 +167,9 @@ class Return(Stmt):
     def analysis_pass(self, context: SemanticContext) -> None:
         self.value.analysis_pass(context)
 
+    def code_length(self) -> int:
+        return 1 + self.value.code_length()
+
 
 class Break(Stmt):
     """
@@ -179,6 +188,11 @@ class Break(Stmt):
         if scope is None:
             raise MisplacedControlFlowError('Break outside of loop')
 
+        self.outer = scope.get_node()
+
+    def code_length(self) -> int:
+        return 1 # just jump
+
 
 class Continue(Stmt):
     """
@@ -191,7 +205,10 @@ class Continue(Stmt):
         scope = context.find_closest(lambda x: isinstance(x.node, While))
 
         if scope is None:
-            raise MisplacedControlFlowError('Continue outside of loopp')
+            raise MisplacedControlFlowError('Continue outside of loop')
+
+    def code_length(self) -> int:
+        return 1 # just jump
 
 
 class If(Stmt):
@@ -237,6 +254,11 @@ class If(Stmt):
 
         context.pop_scope()
 
+    def code_length(self) -> int:
+        if_len = sum(i.code_length() for i in self.if_code)
+        else_len = sum(i.code_length() for i in self.else_code)
+        return self.cond.code_length() + if_len + else_len + 2 # 2 jumps
+
 
 class While(Stmt):
     """
@@ -265,6 +287,10 @@ class While(Stmt):
             i.analysis_pass(context)
 
         context.pop_scope()
+
+    def code_length(self) -> int:
+        return sum(i.code_length() for i in self.code) + \
+               self.cond.code_len() + 2
 
 
 class FuncDecl(Decl):
@@ -306,6 +332,9 @@ class FuncDecl(Decl):
             i.analysis_pass(context)
 
         context.pop_scope()
+
+    def code_length(self) -> int:
+        return sum(i.code_length() for i in self.code)
 
 
 class Program(AST):
@@ -385,6 +414,9 @@ class BinOp(Exp):
                self.left == other.left and \
                self.right == other.right
 
+    def code_length(self) -> int:
+        return self.left.code_length() + self.right.code_length() + 1
+
 
 class UnOp(Exp):
     """
@@ -413,6 +445,9 @@ class UnOp(Exp):
                self.op == other.op and \
                self.value == other.value
 
+    def code_length(self) -> int:
+        return self.value.code_length() + 1
+
 
 class Literal(Exp):
     """
@@ -431,6 +466,9 @@ class Literal(Exp):
 
     def analysis_pass(self, context: SemanticContext) -> None:
         pass
+
+    def code_length(self) -> int:
+        return 1
 
 
 class VarExp(Exp):
@@ -454,6 +492,9 @@ class VarExp(Exp):
             raise UndeclaredIdentifierError(
                 f'Variable {self.name} is not declared'
             )
+
+    def code_length(self) -> int:
+        return 1
 
 
 class FuncCall(Exp):
@@ -490,6 +531,8 @@ class FuncCall(Exp):
         for i in self.params:
             i.analysis_pass(context)
 
+    def code_length(self) -> int:
+        return sum(i.code_length() for i in self.params) + 1
 
 class ExpStmt(Stmt):
     """
