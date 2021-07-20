@@ -9,25 +9,10 @@ from day3_semantic_analysis.semantic_context import (
     GlobalScope,
     NATIVE_FUNCS
 )
-
-
-BINOP_CODE = {
-    '==': 'equal',
-    '!=': 'nequal',
-    '<': 'less',
-    '>': 'great',
-    '<=': 'leq',
-    '>=': 'geq',
-    '+': 'add',
-    '-': 'subtract',
-    '*': 'mul',
-    '/': 'div'
-}
-
-UNOP_CODE = {
-    '-': 'neg',
-    '!': 'not'
-}
+from day4_code_generation import (
+    UNOP_CODE,
+    BINOP_CODE
+)
 
 
 class AST:
@@ -144,6 +129,10 @@ class Assign(Stmt):
             )
 
         self.value.analysis_pass(context)
+        self.var_info = (
+            scope.var_index(self.var),
+            isinstance(scope, GlobalScope)
+        )
 
     def code_length(self) -> int:
         return 1 + self.value.code_length()
@@ -551,6 +540,9 @@ class ExpStmt(Stmt):
 
     def analysis_pass(self, context: SemanticContext) -> None:
         self.value.analysis_pass(context)
+
+    def code_length(self) -> int:
+        return self.value.code_length() + 1
 
 
 def compare_unordered(a, b):

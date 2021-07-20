@@ -211,6 +211,7 @@ lint <a>: pushes integer <a> onto the stack
 lboo <a>: pushes boolean <a> (represented as 0 or 1) onto the stack
 lstr <a>: pushes string <a> (surronded by double quotes) onto the stack
 lnon: pushes NONE onto the stack
+pop: pops and discards the top value on the stack
 
 jmp <code_index>: jumps to code <code_index>
 cjmp <code_index>: pops a boolean value off the stack; if `TRUE`, jumps to code <code_index>

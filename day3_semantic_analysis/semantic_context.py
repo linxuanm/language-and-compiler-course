@@ -32,6 +32,9 @@ class Scope:
         self.vars[name] = self.counter
         self.counter += 1
 
+    def var_index(self, name):
+        return self.vars[name]
+
     def get_node(self):
         return self.node
 
