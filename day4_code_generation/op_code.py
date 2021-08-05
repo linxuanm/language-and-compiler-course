@@ -1,6 +1,8 @@
 BINOP_CODE = {
     '==': 'equal',
     '!=': 'nequal',
+    '&&': 'and',
+    'or': 'or',
     '<': 'less',
     '>': 'great',
     '<=': 'leq',
