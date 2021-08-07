@@ -1,9 +1,7 @@
-from day2_parser import *
-
 from .semantic_context import SemanticContext
 
 
-def analysis(node: Program):
+def analysis(node):
     """
     Returns nothing if the code is valid; otherwise throws an according error.
 

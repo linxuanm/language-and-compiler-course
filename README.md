@@ -213,6 +213,7 @@ lstr <a>: pushes string <a> (surronded by double quotes) onto the stack
 lnon: pushes NONE onto the stack
 pop: pops and discards the top value on the stack
 
+ret: returns a function and pops the function frame
 jmp <code_index>: jumps to code <code_index>
 cjmp <code_index>: pops a boolean value off the stack; if `TRUE`, jumps to code <code_index>
 call <func_name>: invokes the function <func_name>

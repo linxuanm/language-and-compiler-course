@@ -11,7 +11,8 @@ from day3_semantic_analysis.semantic_context import (
 )
 from day4_code_generation import (
     UNOP_CODE,
-    BINOP_CODE
+    BINOP_CODE,
+    CodeGenContext
 )
 
 
@@ -103,6 +104,9 @@ class Declare(Stmt, Decl):
     def code_length(self) -> int:
         return 0 # declaration is purely compile-time
 
+    def generate_code(self) -> [str]:
+        return []
+
 
 class Assign(Stmt):
     """
@@ -137,6 +141,16 @@ class Assign(Stmt):
     def code_length(self) -> int:
         return 1 + self.value.code_length()
 
+    def generate_code(self) -> [str]:
+        value_code = self.value.generate_code()
+
+        if self.var_info[1]:
+            value_code.append(f'gstore {self.var_info[0]}')
+        else:
+            value_code.append(f'lstore {self.var_info[0]}')
+
+        return value_code
+
 
 class Return(Stmt):
     """
@@ -158,6 +172,9 @@ class Return(Stmt):
 
     def code_length(self) -> int:
         return 1 + self.value.code_length()
+
+    def generate_code(self) -> [str]:
+        return self.value.generate_code() + ['ret']
 
 
 class Break(Stmt):
@@ -182,6 +199,9 @@ class Break(Stmt):
     def code_length(self) -> int:
         return 1 # just jump
 
+    def generate_code(self) -> [str]:
+        pass
+
 
 class Continue(Stmt):
     """
@@ -198,6 +218,9 @@ class Continue(Stmt):
 
     def code_length(self) -> int:
         return 1 # just jump
+
+    def generate_code(self) -> [str]:
+        pass
 
 
 class If(Stmt):

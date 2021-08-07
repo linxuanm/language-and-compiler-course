@@ -2,7 +2,7 @@ import argparse
 
 import day1_lexer as lexer
 import day2_parser as parser
-import day3_semantic_analysis.semantics as semantics
+import day3_semantic_analysis as semantics
 import day4_code_generation as codegen
 import day5_virtual_machine as machine
 
@@ -13,12 +13,16 @@ def read_file(path: str) -> str:
 
 
 def compile_code(code: str) -> [str]:
-    pass
+    tokens = lexer.lex(code)
+    ast = parser.parse(parser.Reader(tokens))
+    semantics.analysis(ast)
+
+    return ['a']#codegen.generate(ast)
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    subparsers = parser.add_subparsers(required=True, dest='action')
+    arg_parser = argparse.ArgumentParser()
+    subparsers = arg_parser.add_subparsers(required=True, dest='action')
 
     comp_parser = subparsers.add_parser(
         'compile', help='compiles a source file to a bytecode file'
@@ -61,13 +65,18 @@ if __name__ == '__main__':
         help='the source file to be ran directly'
     )
 
-    args = parser.parse_args()
+    args = arg_parser.parse_args()
 
     if args.action == 'compile':
         code = read_file(args.source)
 
+        with open(args.output, 'w+') as f:
+            f.writelines(compile_code(code))
+
     elif args.action == 'exec':
         code = read_file(args.byte)
+        machine.run_code(code)
 
     elif args.action == 'run':
         code = read_file(args.source)
+        machine.run_code(compile_code(code))

@@ -1,7 +1,4 @@
-from day2_parser import *
-
-
-def generate(node: Program) -> [str]:
+def generate(node) -> [str]:
     """
     Generates the code for a given program.
     """

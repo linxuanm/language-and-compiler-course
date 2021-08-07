@@ -9,7 +9,7 @@ import functools
 
 import day1_lexer as lexer
 import day2_parser as parser
-import day3_semantic_analysis.semantics as semantics
+import day3_semantic_analysis as semantics
 import day4_code_generation as codegen
 import day5_virtual_machine as machine
 
