@@ -1,8 +1,3 @@
-from day1_lexer import (
-    UndeclaredIdentifierError,
-    DuplicateDeclarationError,
-    MisplacedControlFlowError
-)
 from day2_parser import *
 
 from .semantic_context import SemanticContext
