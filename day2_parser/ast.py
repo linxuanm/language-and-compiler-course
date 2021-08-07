@@ -426,9 +426,6 @@ class BinOp(Exp):
                self.left == other.left and \
                self.right == other.right
 
-    def code_length(self) -> int:
-        return self.left.code_length() + self.right.code_length() + 1
-
 
 class UnOp(Exp):
     """
@@ -456,9 +453,6 @@ class UnOp(Exp):
         return type(other) == UnOp and \
                self.op == other.op and \
                self.value == other.value
-
-    def code_length(self) -> int:
-        return self.value.code_length() + 1
 
 
 class Literal(Exp):
