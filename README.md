@@ -6,6 +6,17 @@ Due to the short length of this course, the main focus will be on understanding 
 
 Note that the sample answer, as well as some pre-written code, are not (even trivially) optimized. This is because this course is aimed to teach the ideas and concepts behind a compiler, and therefore explicitness and clarity is far superior than code efficiency.
 
+## Homework
+
+The pieces you need to complete are located in:
+
+- (Day 1) `day1_lexer/lexer.py`: the `lex` function
+- (Day 2) `day2_parser/parser.py`: the `parse`, `parse_func_decl`, `parse_while`, `parse_statement` function
+- (Day 3) `day2_parser/ast.py`: `analysis_pass` for all AST nodes
+- (Day 3) `day3_semantic_analysis/semantic_context.py`: define the `SemanticContext` class in a useful way that passes the tests
+- (Day 4) `day2_parser/ast.py`: `code_length` and `generate_code` for all AST nodes
+- (Day 5): `TODO`
+
 ## Source Language
 
 The source language is a type-free language with C-like syntax:

@@ -5,18 +5,6 @@ from .errors import LexerError
 from .presets import TokenType, load_source_file
 
 
-TOKEN_REGEX = {
-    r'(if|else|while|return|break|continue|decl)': TokenType.KEYWORD,
-    r'(NONE|TRUE|FALSE|".*"|\d+)': TokenType.LITERAL,
-    r'([_a-zA-Z][_a-zA-Z0-9]*)': TokenType.IDENTIFIER,
-    r'(,|;|\(|\)|\{|\})': TokenType.SYMBOL,
-    r'(!=|==|<=|>=|<|>|=|!|\+|-|\*|/|&&|\|\|)': TokenType.OPERATOR,
-    r'(\s+)': TokenType.WHITESPACE
-}
-
-TOKEN_REGEX = {re.compile(k): v for k, v in TOKEN_REGEX.items()}
-
-
 def lex(raw_code: str) -> [(str, TokenType)]:
     """
     Lexes the given string according to the described syntax.
@@ -38,26 +26,4 @@ def lex(raw_code: str) -> [(str, TokenType)]:
         ]
     """
 
-    if not raw_code:
-        return []
-
-    tokens = []
-    while raw_code:
-
-        for k, v in TOKEN_REGEX.items():
-
-            match = re.match(k, raw_code)
-            if match is not None:
-
-                content = match.group(0)
-                raw_code = raw_code[len(content) :]
-
-                if not v == TokenType.WHITESPACE:
-                    tokens.append((content, v))
-
-                break
-
-        else:
-            raise LexerError('No tokens found at ' + raw_code)
-
-    return tokens
+    raise NotImplementedError
