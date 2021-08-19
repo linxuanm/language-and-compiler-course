@@ -44,7 +44,7 @@ class AST:
 
         raise NotImplementedError
 
-    def generate_code(self) -> [str]:
+    def generate_code(self, context: CodeGenContext) -> [str]:
         """
         Generates the code for this node according to the surronding context.
         Returns the list of bytecode for this node.
@@ -104,7 +104,7 @@ class Declare(Stmt, Decl):
     def code_length(self) -> int:
         return 0 # declaration is purely compile-time
 
-    def generate_code(self) -> [str]:
+    def generate_code(self, context: CodeGenContext) -> [str]:
         return []
 
 
@@ -141,7 +141,7 @@ class Assign(Stmt):
     def code_length(self) -> int:
         return 1 + self.value.code_length()
 
-    def generate_code(self) -> [str]:
+    def generate_code(self, context: CodeGenContext) -> [str]:
         value_code = self.value.generate_code()
 
         if self.var_info[1]:
@@ -173,7 +173,7 @@ class Return(Stmt):
     def code_length(self) -> int:
         return 1 + self.value.code_length()
 
-    def generate_code(self) -> [str]:
+    def generate_code(self, context: CodeGenContext) -> [str]:
         return self.value.generate_code() + ['ret']
 
 
@@ -199,7 +199,7 @@ class Break(Stmt):
     def code_length(self) -> int:
         return 1 # just jump
 
-    def generate_code(self) -> [str]:
+    def generate_code(self, context: CodeGenContext) -> [str]:
         pass
 
 
@@ -219,7 +219,7 @@ class Continue(Stmt):
     def code_length(self) -> int:
         return 1 # just jump
 
-    def generate_code(self) -> [str]:
+    def generate_code(self, context: CodeGenContext) -> [str]:
         pass
 
 
@@ -271,6 +271,9 @@ class If(Stmt):
         else_len = sum(i.code_length() for i in self.else_code)
         return self.cond.code_length() + if_len + else_len + 2 # 2 jumps
 
+    def generate_code(self, context: CodeGenContext) -> [str]:
+        pass
+
 
 class While(Stmt):
     """
@@ -303,6 +306,9 @@ class While(Stmt):
     def code_length(self) -> int:
         return sum(i.code_length() for i in self.code) + \
                self.cond.code_len() + 2
+
+    def generate_code(self, context: CodeGenContext) -> [str]:
+        pass
 
 
 class FuncDecl(Decl):
@@ -348,6 +354,9 @@ class FuncDecl(Decl):
     def code_length(self) -> int:
         return sum(i.code_length() for i in self.code)
 
+    def generate_code(self, context: CodeGenContext) -> [str]:
+        pass
+
 
 class Program(AST):
     """
@@ -385,6 +394,9 @@ class Program(AST):
 
         context.pop_scope()
 
+    def generate_code(self, context: CodeGenContext) -> [str]:
+        pass
+
 
 class BinOp(Exp):
     """
@@ -411,7 +423,7 @@ class BinOp(Exp):
     def code_length(self):
         return self.left.code_length() + self.right.code_length() + 1
 
-    def generate_code(self) -> [str]:
+    def generate_code(self, context: CodeGenContext) -> [str]:
         left_code = self.left.generate_code()
         right_code = self.right.generate_code()
 
@@ -443,7 +455,7 @@ class UnOp(Exp):
     def code_length(self):
         return self.value.code_length() + 1
 
-    def generate_code(self):
+    def generate_code(self, context: CodeGenContext):
         return self.value.generate_code() + [UNOP_CODE[self.op]]
 
     def __str__(self):
@@ -476,6 +488,9 @@ class Literal(Exp):
     def code_length(self) -> int:
         return 1
 
+    def generate_code(self, context: CodeGenContext):
+        pass
+
 
 class VarExp(Exp):
     """
@@ -501,6 +516,9 @@ class VarExp(Exp):
 
     def code_length(self) -> int:
         return 1
+
+    def generate_code(self, context: CodeGenContext):
+        pass
 
 
 class FuncCall(Exp):
@@ -540,6 +558,10 @@ class FuncCall(Exp):
     def code_length(self) -> int:
         return sum(i.code_length() for i in self.params) + 1
 
+    def generate_code(self, context: CodeGenContext):
+        pass
+
+
 class ExpStmt(Stmt):
     """
     A statement where there is a single discarded expression value.
@@ -560,6 +582,9 @@ class ExpStmt(Stmt):
 
     def code_length(self) -> int:
         return self.value.code_length() + 1
+
+    def generate_code(self, context: CodeGenContext):
+        pass
 
 
 def compare_unordered(a, b):
