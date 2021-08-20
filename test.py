@@ -429,7 +429,11 @@ CODE_FILES = {
             (';', TokenType.SYMBOL),
             ('}', TokenType.SYMBOL),
             ('return', TokenType.KEYWORD),
+            ('-', TokenType.OPERATOR),
+            ('(', TokenType.SYMBOL),
+            ('-', TokenType.OPERATOR),
             ('x', TokenType.IDENTIFIER),
+            (')', TokenType.SYMBOL),
             ('*', TokenType.OPERATOR),
             ('factorio', TokenType.IDENTIFIER),
             ('(', TokenType.SYMBOL),
@@ -458,7 +462,7 @@ CODE_FILES = {
                     []
                 ),
                 Return(BinOp('*',
-                    VarExp('x'),
+                    UnOp('-', UnOp('-', VarExp('x'))),
                     FuncCall('factorio', [
                         BinOp('-', VarExp('x'), Literal('1'))
                     ])

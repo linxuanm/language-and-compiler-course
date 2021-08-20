@@ -4,5 +4,5 @@ main() {
 
 factorio(x) {
     if (!(!(x <= 1))) {return 1;}
-    return x * factorio(x - 1);
+    return -(-x) * factorio(x - 1);
 }
