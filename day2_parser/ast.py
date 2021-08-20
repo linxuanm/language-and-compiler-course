@@ -285,7 +285,37 @@ class If(Stmt):
         return self.cond.code_length() + if_len + else_len + 2 # 2 jumps
 
     def generate_code(self, context: CodeGenContext) -> [str]:
-        pass
+
+        cond_code = self.cond.generate_code(context)
+
+        # initial 'if' branch jump
+        context.increment()
+
+        # code length
+        if_length = sum(i.code_length() for i in self.if_code)
+        else_length = sum(i.code_length() for i in self.else_code)
+
+        # start of 'if' branch
+        if_branch_start = context.get_counter() + else_length + 1 # extra 'jmp'
+        if_branch_end = if_branch_start + if_length
+
+        else_branch = sum(
+            [i.generate_code(context) for i in self.else_code],
+            []
+        )
+
+        # 'jmp' to end
+        context.increment()
+
+        if_branch = sum(
+            [i.generate_code(context) for i in self.if_code],
+            []
+        )
+
+        start_jmp = f'cjmp {if_branch_start}'
+        middle_jmp = f'jmp {if_branch_end}'
+
+        return [*cond_code, start_jmp, *else_branch, middle_jmp, *if_branch]
 
 
 class While(Stmt):
@@ -454,6 +484,7 @@ class Program(AST):
             func_context = CodeGenContext()
 
             func_code = i.generate_code(func_context)
+            print(len(func_code), func_context.get_counter())
             assert len(func_code) == func_context.get_counter()
 
             code.append('')
