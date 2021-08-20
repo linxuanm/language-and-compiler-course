@@ -349,13 +349,20 @@ class FuncDecl(Decl):
         for i in self.code:
             i.analysis_pass(context)
 
+        self.var_count = scope.var_count()
         context.pop_scope()
 
     def code_length(self) -> int:
         return sum(i.code_length() for i in self.code)
 
     def generate_code(self, context: CodeGenContext) -> [str]:
-        pass
+        header = f'{self.func_name} {len(self.params)} {self.var_count}'
+        footer = f':{self.func_name}'
+
+        body = sum([i.generate_code(context) for i in self.code], [])
+        body = [' ' * 4 + i for i in body]
+
+        return [header, *body, footer]
 
 
 class Program(AST):
@@ -395,7 +402,16 @@ class Program(AST):
         context.pop_scope()
 
     def generate_code(self, context: CodeGenContext) -> [str]:
-        pass
+        code = [
+            str(len(self.var_decl)),
+            str(len(self.func_decl)),
+        ]
+
+        for i in self.func_decl:
+            code.append('')
+            code += i.generate_code(context)
+
+        return code
 
 
 class BinOp(Exp):
@@ -489,7 +505,16 @@ class Literal(Exp):
         return 1
 
     def generate_code(self, context: CodeGenContext) -> [str]:
-        pass
+        if self.value == 'NONE':
+            return ['lnon']
+        elif self.value == 'TRUE':
+            return ['lboo 1']
+        elif self.value == 'FALSE':
+            return ['lboo 0']
+        elif self.value.isnumeric():
+            return [f'lint {self.value}']
+        else:
+            return [f'lstr {self.value}']
 
 
 class VarExp(Exp):

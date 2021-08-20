@@ -38,6 +38,9 @@ class Scope:
     def get_node(self):
         return self.node
 
+    def var_count(self):
+        return self.counter
+
     def __repr__(self):
         return str(self)
 

@@ -263,19 +263,19 @@ Each function call pushes a frame onto the frame stack. Each frame represents th
 
 Each bytecode file `.bytecode` contains all the necessary information to execute the contained code. This includes function information and global variable information.
 
-Each bytecode file is structured as such (indentation insensitive):
+Each bytecode file is structured as such (indentation and blank line insensitive) (`local_var_count` includes `parameter_count`):
 
 ```
 <global_var_count>
 <function_count>
 
-my_function_a <local_var_count>
+my_function_a <parameter_count> <local_var_count>
     code
     code
     code
 :my_function_a
 
-my_function_b <local_var_count>
+my_function_b <parameter_count> <local_var_count>
     code
     code
     code

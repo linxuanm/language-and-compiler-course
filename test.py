@@ -571,10 +571,14 @@ def test_lexer(file_ref):
 @wrap_title('Parser')
 def test_parser(file_ref, prev_tokens):
     ref_asts = get_file_values(file_ref, 'ast')
-    asts = {k: parser.parse(parser.Reader(v)) for k, v in prev_tokens.items()}
+    asts = {}
 
-    for i in asts:
-        assert_equal(asts[i], ref_asts[i], i)
+    # removed dict comprehension to ensure the display of previous results
+    # when an unexpected error occurs
+    for k, v in prev_tokens.items():
+        node = parser.parse(parser.Reader(v))
+        assert_equal(node, ref_asts[k], k)
+        asts[k] = node
 
     return asts
 
@@ -584,6 +588,17 @@ def test_analysis(asts):
     for i in asts:
         semantics.analysis(asts[i])
         good(f'Test Passed: {i}')
+
+
+@wrap_title('Code Generation')
+def test_generation(asts):
+    out_code = {}
+
+    for k, v in asts.items():
+        out_code[k] = codegen.generate(v)
+        good(f'Test Passed: {k}')
+
+    return out_code
 
 
 def full_compile(path):
@@ -603,5 +618,6 @@ tokens = test_lexer(CODE_FILES)
 asts = test_parser(CODE_FILES, tokens)
 test_analysis(asts)
 test_fail(COMPILE_ERROR_FILES)
+generated = test_generation(asts)
 
 good('ALL TEST PASSED')
