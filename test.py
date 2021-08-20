@@ -598,6 +598,8 @@ def test_generation(asts):
         out_code[k] = codegen.generate(v)
         good(f'Test Passed: {k}')
 
+        # for i in out_code[k]: print(i)
+
     return out_code
 
 

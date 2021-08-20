@@ -308,7 +308,27 @@ class While(Stmt):
                self.cond.code_len() + 2
 
     def generate_code(self, context: CodeGenContext) -> [str]:
-        pass
+
+        # for the jumping to conditional branch at bottom
+        context.increment(1)
+
+        # for resuming a loop
+        start = context.get_counter()
+
+        # generate code
+        code = sum([i.generate_code(context) for i in self.code], [])
+
+        # branching location
+        end = context.get_counter()
+        context.increment(1)
+
+        # condition
+        cond_code = sum([i.generate_code(context) for i in self.cond], [])
+
+        header = f'jmp {end}'
+        footer = f'cjmp {start}'
+
+        return [header, *code, *cond_code, footer]
 
 
 class FuncDecl(Decl):
@@ -356,6 +376,8 @@ class FuncDecl(Decl):
         return sum(i.code_length() for i in self.code)
 
     def generate_code(self, context: CodeGenContext) -> [str]:
+
+        # header and footer do not count toward code length
         header = f'{self.func_name} {len(self.params)} {self.var_count}'
         footer = f':{self.func_name}'
 
@@ -403,13 +425,18 @@ class Program(AST):
 
     def generate_code(self, context: CodeGenContext) -> [str]:
         code = [
-            str(len(self.var_decl)),
+            str(sum(len(i.vars) for i in self.var_decl)),
             str(len(self.func_decl)),
         ]
 
         for i in self.func_decl:
+            func_context = CodeGenContext()
+
+            func_code = i.generate_code(func_context)
+            assert len(func_code) == func_context.get_counter()
+
             code.append('')
-            code += i.generate_code(context)
+            code += func_code
 
         return code
 
@@ -443,6 +470,7 @@ class BinOp(Exp):
         left_code = self.left.generate_code(context)
         right_code = self.right.generate_code(context)
 
+        context.increment(1)
         return left_code + right_code + [BINOP_CODE[self.op]]
 
     def __str__(self):
@@ -472,7 +500,10 @@ class UnOp(Exp):
         return self.value.code_length() + 1
 
     def generate_code(self, context: CodeGenContext) -> [str]:
-        return self.value.generate_code(context) + [UNOP_CODE[self.op]]
+        code = self.value.generate_code(context)
+
+        context.increment(1)
+        return code + [UNOP_CODE[self.op]]
 
     def __str__(self):
         return f'{self.op}({self.value})'
@@ -505,6 +536,8 @@ class Literal(Exp):
         return 1
 
     def generate_code(self, context: CodeGenContext) -> [str]:
+        context.increment(1)
+
         if self.value == 'NONE':
             return ['lnon']
         elif self.value == 'TRUE':
@@ -548,6 +581,8 @@ class VarExp(Exp):
         return 1
 
     def generate_code(self, context: CodeGenContext) -> [str]:
+        context.increment(1)
+
         if self.var_info[1]:
             return [f'gload {self.var_info[0]}']
         else:
@@ -598,6 +633,7 @@ class FuncCall(Exp):
         for i in self.params:
             params_code += i.generate_code(context)
 
+        context.increment(1)
         return params_code + [end]
 
 
@@ -623,7 +659,9 @@ class ExpStmt(Stmt):
         return self.value.code_length() + 1
 
     def generate_code(self, context: CodeGenContext) -> [str]:
-        return self.value.generate_code(context) + ['pop']
+        code = self.value.generate_code(context) + ['pop']
+        context.increment(1)
+        return code
 
 
 def compare_unordered(a, b):
