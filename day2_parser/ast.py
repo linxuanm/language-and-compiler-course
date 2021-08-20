@@ -107,6 +107,9 @@ class Declare(Stmt, Decl):
     def generate_code(self, context: CodeGenContext) -> [str]:
         return []
 
+    def var_count(self) -> int:
+        return len(self.vars)
+
 
 class Assign(Stmt):
     """
@@ -144,6 +147,7 @@ class Assign(Stmt):
     def generate_code(self, context: CodeGenContext) -> [str]:
         value_code = self.value.generate_code(context)
 
+        context.increment()
         if self.var_info[1]:
             value_code.append(f'gstore {self.var_info[0]}')
         else:
@@ -174,7 +178,10 @@ class Return(Stmt):
         return 1 + self.value.code_length()
 
     def generate_code(self, context: CodeGenContext) -> [str]:
-        return self.value.generate_code(context) + ['ret']
+        code = self.value.generate_code(context)
+
+        context.increment()
+        return code + ['ret']
 
 
 class Break(Stmt):
@@ -200,7 +207,9 @@ class Break(Stmt):
         return 1 # just jump
 
     def generate_code(self, context: CodeGenContext) -> [str]:
-        pass
+        context.increment()
+
+        return [f'jmp {self.loop.get_loop_end() + 1}']
 
 
 class Continue(Stmt):
@@ -216,11 +225,15 @@ class Continue(Stmt):
         if scope is None:
             raise MisplacedControlFlowError('Continue outside of loop')
 
+        self.loop = scope
+
     def code_length(self) -> int:
         return 1 # just jump
 
     def generate_code(self, context: CodeGenContext) -> [str]:
-        pass
+        context.increment()
+
+        return [f'jmp {self.loop.get_loop_end()}']
 
 
 class If(Stmt):
@@ -310,25 +323,33 @@ class While(Stmt):
     def generate_code(self, context: CodeGenContext) -> [str]:
 
         # for the jumping to conditional branch at bottom
-        context.increment(1)
+        context.increment()
 
-        # for resuming a loop
-        start = context.get_counter()
+        # for the structure of a loop
+        self.start = context.get_counter()
+        self.end = start + self.code_length() - 1 # before 'cjmp'
 
         # generate code
         code = sum([i.generate_code(context) for i in self.code], [])
 
         # branching location
-        end = context.get_counter()
-        context.increment(1)
+        context.increment()
 
         # condition
         cond_code = sum([i.generate_code(context) for i in self.cond], [])
 
-        header = f'jmp {end}'
-        footer = f'cjmp {start}'
+        header = f'jmp {self.end}'
+        footer = f'cjmp {self.start}'
 
         return [header, *code, *cond_code, footer]
+
+    # call-backed during code generation by 'continue' and 'break'
+    def get_loop_end(self) -> int:
+        """
+        Returns the instruction position before the looping 'cjmp'.
+        """
+
+        return self.end
 
 
 class FuncDecl(Decl):
@@ -425,7 +446,7 @@ class Program(AST):
 
     def generate_code(self, context: CodeGenContext) -> [str]:
         code = [
-            str(sum(len(i.vars) for i in self.var_decl)),
+            str(sum(i.var_count() for i in self.var_decl)),
             str(len(self.func_decl)),
         ]
 
@@ -470,7 +491,7 @@ class BinOp(Exp):
         left_code = self.left.generate_code(context)
         right_code = self.right.generate_code(context)
 
-        context.increment(1)
+        context.increment()
         return left_code + right_code + [BINOP_CODE[self.op]]
 
     def __str__(self):
@@ -502,7 +523,7 @@ class UnOp(Exp):
     def generate_code(self, context: CodeGenContext) -> [str]:
         code = self.value.generate_code(context)
 
-        context.increment(1)
+        context.increment()
         return code + [UNOP_CODE[self.op]]
 
     def __str__(self):
@@ -536,7 +557,7 @@ class Literal(Exp):
         return 1
 
     def generate_code(self, context: CodeGenContext) -> [str]:
-        context.increment(1)
+        context.increment()
 
         if self.value == 'NONE':
             return ['lnon']
@@ -581,7 +602,7 @@ class VarExp(Exp):
         return 1
 
     def generate_code(self, context: CodeGenContext) -> [str]:
-        context.increment(1)
+        context.increment()
 
         if self.var_info[1]:
             return [f'gload {self.var_info[0]}']
@@ -633,7 +654,7 @@ class FuncCall(Exp):
         for i in self.params:
             params_code += i.generate_code(context)
 
-        context.increment(1)
+        context.increment()
         return params_code + [end]
 
 
@@ -660,7 +681,7 @@ class ExpStmt(Stmt):
 
     def generate_code(self, context: CodeGenContext) -> [str]:
         code = self.value.generate_code(context) + ['pop']
-        context.increment(1)
+        context.increment()
         return code
 
 
