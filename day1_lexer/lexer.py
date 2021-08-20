@@ -5,8 +5,8 @@ from .errors import LexerError
 from .presets import TokenType, load_source_file
 
 
+KEYWORDS = ['if', 'else', 'while', 'return', 'break', 'continue', 'decl']
 TOKEN_REGEX = {
-    r'(if|else|while|return|break|continue|decl)': TokenType.KEYWORD,
     r'(NONE|TRUE|FALSE|".*"|\d+)': TokenType.LITERAL,
     r'([_a-zA-Z][_a-zA-Z0-9]*)': TokenType.IDENTIFIER,
     r'(,|;|\(|\)|\{|\})': TokenType.SYMBOL,
@@ -59,5 +59,9 @@ def lex(raw_code: str) -> [(str, TokenType)]:
 
         else:
             raise LexerError('No tokens found at ' + raw_code)
+
+    tokens = [
+        (i[0], TokenType.KEYWORD) if i[0] in KEYWORDS else i for i in tokens
+    ]
 
     return tokens

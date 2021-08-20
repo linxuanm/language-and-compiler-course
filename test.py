@@ -188,11 +188,11 @@ CODE_FILES = {
             (')', TokenType.SYMBOL),
             ('{', TokenType.SYMBOL),
             ('decl', TokenType.KEYWORD),
-            ('a', TokenType.IDENTIFIER),
+            ('whilea', TokenType.IDENTIFIER),
             (',', TokenType.SYMBOL),
             ('b', TokenType.IDENTIFIER),
             (';', TokenType.SYMBOL),
-            ('a', TokenType.IDENTIFIER),
+            ('whilea', TokenType.IDENTIFIER),
             ('=', TokenType.OPERATOR),
             ('0', TokenType.LITERAL),
             (';', TokenType.SYMBOL),
@@ -215,27 +215,27 @@ CODE_FILES = {
             ('TRUE', TokenType.LITERAL),
             (')', TokenType.SYMBOL),
             ('{', TokenType.SYMBOL),
-            ('a', TokenType.IDENTIFIER),
+            ('whilea', TokenType.IDENTIFIER),
             ('=', TokenType.OPERATOR),
-            ('a', TokenType.IDENTIFIER),
+            ('whilea', TokenType.IDENTIFIER),
             ('+', TokenType.OPERATOR),
             ('b', TokenType.IDENTIFIER),
             (';', TokenType.SYMBOL),
             ('b', TokenType.IDENTIFIER),
             ('=', TokenType.OPERATOR),
-            ('a', TokenType.IDENTIFIER),
+            ('whilea', TokenType.IDENTIFIER),
             ('-', TokenType.OPERATOR),
             ('b', TokenType.IDENTIFIER),
             (';', TokenType.SYMBOL),
-            ('a', TokenType.IDENTIFIER),
+            ('whilea', TokenType.IDENTIFIER),
             ('=', TokenType.OPERATOR),
-            ('a', TokenType.IDENTIFIER),
+            ('whilea', TokenType.IDENTIFIER),
             ('-', TokenType.OPERATOR),
             ('b', TokenType.IDENTIFIER),
             (';', TokenType.SYMBOL),
             ('b', TokenType.IDENTIFIER),
             ('=', TokenType.OPERATOR),
-            ('a', TokenType.IDENTIFIER),
+            ('whilea', TokenType.IDENTIFIER),
             ('+', TokenType.OPERATOR),
             ('b', TokenType.IDENTIFIER),
             (';', TokenType.SYMBOL),
@@ -256,8 +256,8 @@ CODE_FILES = {
         ],
         'ast': Program([
             FuncDecl('main', [], [
-                Declare(['a', 'b']),
-                Assign('a', Literal('0')),
+                Declare(['whilea', 'b']),
+                Assign('whilea', Literal('0')),
                 Assign('b', Literal('1')),
                 While(
                     BinOp('&&',
@@ -268,10 +268,14 @@ CODE_FILES = {
                         Literal('TRUE')
                     ),
                     [
-                        Assign('a', BinOp('+', VarExp('a'), VarExp('b'))),
-                        Assign('b', BinOp('-', VarExp('a'), VarExp('b'))),
-                        Assign('a', BinOp('-', VarExp('a'), VarExp('b'))),
-                        Assign('b', BinOp('+', VarExp('a'), VarExp('b'))),
+                        Assign(
+                            'whilea', BinOp('+', VarExp('whilea'), VarExp('b'))
+                        ),
+                        Assign('b', BinOp('-', VarExp('whilea'), VarExp('b'))),
+                        Assign(
+                            'whilea', BinOp('-', VarExp('whilea'), VarExp('b'))
+                        ),
+                        Assign('b', BinOp('+', VarExp('whilea'), VarExp('b'))),
                         ExpStmt(FuncCall('print', [
                             BinOp('+', VarExp('b'), Literal('0'))
                         ]))

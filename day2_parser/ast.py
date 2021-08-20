@@ -142,7 +142,7 @@ class Assign(Stmt):
         return 1 + self.value.code_length()
 
     def generate_code(self, context: CodeGenContext) -> [str]:
-        value_code = self.value.generate_code()
+        value_code = self.value.generate_code(context)
 
         if self.var_info[1]:
             value_code.append(f'gstore {self.var_info[0]}')
@@ -174,7 +174,7 @@ class Return(Stmt):
         return 1 + self.value.code_length()
 
     def generate_code(self, context: CodeGenContext) -> [str]:
-        return self.value.generate_code() + ['ret']
+        return self.value.generate_code(context) + ['ret']
 
 
 class Break(Stmt):
@@ -424,8 +424,8 @@ class BinOp(Exp):
         return self.left.code_length() + self.right.code_length() + 1
 
     def generate_code(self, context: CodeGenContext) -> [str]:
-        left_code = self.left.generate_code()
-        right_code = self.right.generate_code()
+        left_code = self.left.generate_code(context)
+        right_code = self.right.generate_code(context)
 
         return left_code + right_code + [BINOP_CODE[self.op]]
 
@@ -455,8 +455,8 @@ class UnOp(Exp):
     def code_length(self):
         return self.value.code_length() + 1
 
-    def generate_code(self, context: CodeGenContext):
-        return self.value.generate_code() + [UNOP_CODE[self.op]]
+    def generate_code(self, context: CodeGenContext) -> [str]:
+        return self.value.generate_code(context) + [UNOP_CODE[self.op]]
 
     def __str__(self):
         return f'{self.op}({self.value})'
@@ -488,7 +488,7 @@ class Literal(Exp):
     def code_length(self) -> int:
         return 1
 
-    def generate_code(self, context: CodeGenContext):
+    def generate_code(self, context: CodeGenContext) -> [str]:
         pass
 
 
@@ -514,11 +514,19 @@ class VarExp(Exp):
                 f'Variable {self.name} is not declared'
             )
 
+        self.var_info = (
+            scope.var_index(self.name),
+            isinstance(scope, GlobalScope)
+        )
+
     def code_length(self) -> int:
         return 1
 
-    def generate_code(self, context: CodeGenContext):
-        pass
+    def generate_code(self, context: CodeGenContext) -> [str]:
+        if self.var_info[1]:
+            return [f'gload {self.var_info[0]}']
+        else:
+            return [f'lload {self.var_info[0]}']
 
 
 class FuncCall(Exp):
@@ -558,8 +566,14 @@ class FuncCall(Exp):
     def code_length(self) -> int:
         return sum(i.code_length() for i in self.params) + 1
 
-    def generate_code(self, context: CodeGenContext):
-        pass
+    def generate_code(self, context: CodeGenContext) -> [str]:
+        end = f'call {self.name}'
+
+        params_code = []
+        for i in self.params:
+            params_code += i.generate_code(context)
+
+        return params_code + [end]
 
 
 class ExpStmt(Stmt):
@@ -583,8 +597,8 @@ class ExpStmt(Stmt):
     def code_length(self) -> int:
         return self.value.code_length() + 1
 
-    def generate_code(self, context: CodeGenContext):
-        pass
+    def generate_code(self, context: CodeGenContext) -> [str]:
+        return self.value.generate_code(context) + ['pop']
 
 
 def compare_unordered(a, b):
