@@ -2,7 +2,7 @@ BINOP_CODE = {
     '==': 'equal',
     '!=': 'nequal',
     '&&': 'and',
-    'or': 'or',
+    '||': 'or',
     '<': 'less',
     '>': 'great',
     '<=': 'leq',

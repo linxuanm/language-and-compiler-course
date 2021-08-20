@@ -348,7 +348,7 @@ class While(Stmt):
 
     def code_length(self) -> int:
         return sum(i.code_length() for i in self.code) + \
-               self.cond.code_len() + 2
+               self.cond.code_length() + 2
 
     def generate_code(self, context: CodeGenContext) -> [str]:
 
@@ -357,7 +357,7 @@ class While(Stmt):
 
         # for the structure of a loop
         self.start = context.get_counter()
-        self.end = start + self.code_length() - 1 # before 'cjmp'
+        self.end = self.start + self.code_length() - 1 # before 'cjmp'
 
         # generate code
         code = sum([i.generate_code(context) for i in self.code], [])
@@ -366,7 +366,7 @@ class While(Stmt):
         context.increment()
 
         # condition
-        cond_code = sum([i.generate_code(context) for i in self.cond], [])
+        cond_code = self.cond.generate_code(context)
 
         header = f'jmp {self.end}'
         footer = f'cjmp {self.start}'
@@ -484,8 +484,9 @@ class Program(AST):
             func_context = CodeGenContext()
 
             func_code = i.generate_code(func_context)
-            print(len(func_code), func_context.get_counter())
-            assert len(func_code) == func_context.get_counter()
+
+            # -2 due to function header and footer
+            assert len(func_code) - 2 == func_context.get_counter()
 
             code.append('')
             code += func_code
