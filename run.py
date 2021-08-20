@@ -17,7 +17,7 @@ def compile_code(code: str) -> [str]:
     ast = parser.parse(parser.Reader(tokens))
     semantics.analysis(ast)
 
-    return ['a']#codegen.generate(ast)
+    return codegen.generate(ast)
 
 
 if __name__ == '__main__':
@@ -71,7 +71,7 @@ if __name__ == '__main__':
         code = read_file(args.source)
 
         with open(args.output, 'w+') as f:
-            f.writelines(compile_code(code))
+            f.write('\n'.join(compile_code(code)))
 
     elif args.action == 'exec':
         code = read_file(args.byte)
