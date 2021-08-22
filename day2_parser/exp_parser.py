@@ -27,9 +27,9 @@ def exp_parser_template(
         """
 
         def parse_partial(reader: Reader) -> Callable[[Exp], Exp]:
-            # since there is no AST node directly corresponding to the eliminated
-            # version of a binary operation, a bit of currying is used here for
-            # generalizablity
+            # since there is no AST node directly corresponding to the
+            # eliminated version of a binary operation, a bit of currying is
+            # used here for generalizablity
 
             if not reader.test_set(first_sym):
                 return lambda x: x
@@ -43,7 +43,6 @@ def exp_parser_template(
             return lambda x: tail(build(x))
 
         start_exp = upper(reader) # non-recursive non-terminals
-
         return parse_partial(reader)(start_exp)
 
     return parse_infix
@@ -86,6 +85,12 @@ def parse_exp_imm(reader: Reader) -> Exp:
         reader.match(')')
 
         return value
+
+    else:
+        raise ParserError(
+            f'Token {reader.peek()} does not match the first '
+            'set of immediate values'
+        )
 
 
 parse_term = exp_parser_template({'*', '/'}, parse_exp_imm)

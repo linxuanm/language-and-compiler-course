@@ -473,6 +473,12 @@ CODE_FILES = {
 
 }
 COMPILE_ERROR_FILES = {
+    'error_parse_delimiter.code': lexer.ParserError,
+    'error_parse_equal.code': lexer.ParserError,
+    'error_parse_iden.code': lexer.ParserError,
+    'error_parse_operator.code': lexer.ParserError,
+    'error_parse_semicolon.code': lexer.ParserError,
+    'error_dup_decl_func.code': lexer.DuplicateDeclarationError,
     'error_dup_decl_func.code': lexer.DuplicateDeclarationError,
     'error_dup_decl_simple.code': lexer.DuplicateDeclarationError,
     'error_dup_decl_stmt.code': lexer.DuplicateDeclarationError,

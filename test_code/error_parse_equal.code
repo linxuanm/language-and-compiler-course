@@ -1,0 +1,8 @@
+main() {
+    decl a;
+    a = str_to_int(input("blah"));
+
+    if (a = 10) {
+        print("YAY 10");
+    }
+}

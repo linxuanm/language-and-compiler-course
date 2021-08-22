@@ -1,0 +1,5 @@
+main() {
+    print("Hello");
+    print("this is")
+    print("bad code");
+}

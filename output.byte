@@ -1,1 +1,31 @@
-a
+0
+2
+
+main 0 0
+    lstr "Hello"
+    call input
+    call str_to_int
+    call func
+    pop
+:main
+
+func 1 2
+    lload 0
+    lstore 1
+    jmp 15
+    lload 1
+    call print
+    pop
+    lload 1
+    lint 1
+    subtract
+    lstore 1
+    lload 1
+    lint 1
+    neg
+    great
+    cjmp 3
+    lstr "DONE"
+    call print
+    pop
+:func

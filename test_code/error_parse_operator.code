@@ -1,0 +1,9 @@
+decl abc;
+
+main() {
+    decl a, b;
+    a = input("");
+    b = input("");
+
+    abc = a ++ b;
+}
