@@ -302,4 +302,14 @@ mul           // [65]
 
 ### Native Functions
 
-To allow interaction with the low level functionalities, the virtual machine exposes certain native functions, such as basic IO. The native function table is similar to the various variable tables. Each native function behaves similarily to a normal function; parameters are popped of the stack in reverse order, and the return value is pushed onto the stack when the function returns.
+To allow interaction with the low level functionalities, the virtual machine exposes certain native functions, such as basic IO. The native function table is similar to the various variable tables. Each native function behaves similarily to a normal function; parameters are popped off the stack in reverse order, and the return value is pushed onto the stack when the function returns.
+
+The index and description of native functions are as follows:
+- 0: `print` (1 param): prints a value to the console (any value type is allowed)
+- 1: `input` (1 param): prompts an input with the given message to the console and returns a string
+- 2: `str_to_int` (1 param): parses a string to an integer
+- 3: `int_to_str` (1 param): converts an integer to a string
+
+### Arithmetic Rules
+
+There isn't much to worry about runtime arithmetics since the Python backend takes care of most things. There is no type safety for arithmetic operators (well duh) during compile-time, so incompatible types will result in an error when the Python backend performs operations on them. It is expected to just let Python emit the raw error in such occasions (e.g. when `1` is added to `NONE`).

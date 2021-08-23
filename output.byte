@@ -2,7 +2,7 @@
 2
 
 main 0 0
-    lstr "Hello"
+    lstr "Hello World"
     call input
     call str_to_int
     call func

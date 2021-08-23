@@ -5,7 +5,8 @@ from day1_lexer import DuplicateDeclarationError
 NATIVE_FUNCS = {
     'print': ['content'],
     'input': ['message'],
-    'str_to_int': ['string']
+    'str_to_int': ['string'],
+    'int_to_str': ['int']
 }
 
 

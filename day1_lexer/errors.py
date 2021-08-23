@@ -40,3 +40,10 @@ class InvalidParametersError(SyntaxError):
     When a function is invoked with the incorrect amount of parameters.
     """
     pass
+
+
+class InvalidByteSyntaxError(SyntaxError):
+    """
+    When the syntax of a bytecode file is not valid.
+    """
+    pass
