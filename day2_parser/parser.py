@@ -129,25 +129,7 @@ def parse(reader: Reader) -> Program:
     incorporated for generalizability and simplicity.
     """
 
-    glob_decl = []
-
-    while reader.test_set(FIRST_SET['program']):
-        if reader.test_set(FIRST_SET['declare']):
-            glob_decl.append(parse_declare(reader))
-        elif reader.test_set(FIRST_SET['decl_func']):
-            glob_decl.append(parse_func_decl(reader))
-        else:
-            raise ParserError(
-                f'Unexpected token {reader.peek()} '
-                'encountered in the global scope'
-            )
-
-    if not reader.end():
-        raise ParserError(
-            f'Remaining unstructured token beginning with {reader.peek()}'
-        )
-
-    return Program(glob_decl)
+    raise NotImplementedError
 
 
 def parse_statement_list(reader: Reader) -> [Stmt]:
@@ -213,17 +195,7 @@ def parse_func_decl(reader: Reader) -> FuncDecl:
     Parses a function declaration.
     """
 
-    name = reader.match(TokenType.IDENTIFIER)
-
-    reader.match('(')
-    params = parse_identifier_list(reader)
-    reader.match(')')
-
-    reader.match('{')
-    code = parse_statement_list(reader)
-    reader.match('}')
-
-    return FuncDecl(name, params, code)
+    raise NotImplementedError
 
 
 def parse_if(reader: Reader) -> If:
@@ -264,17 +236,7 @@ def parse_while(reader: Reader) -> While:
     Parses a while loop. Should be pretty trivial after completing 'parse_if'.
     """
 
-    reader.match('while')
-
-    reader.match('(')
-    cond = parse_exp(reader)
-    reader.match(')')
-
-    reader.match('{')
-    code = parse_statement_list(reader)
-    reader.match('}')
-
-    return While(cond, code)
+    raise NotImplementedError
 
 
 def parse_identifier_start(reader: Reader) -> Stmt:
@@ -337,44 +299,8 @@ def parse_statement(reader: Reader) -> Stmt:
     # therefore we abstracts everything inside each 'if' switch as simply
     # something that parses the given production derived from the tested
     # FIRST_SET
-    if reader.test_set(FIRST_SET['if']):
-        return parse_if(reader)
 
-    elif reader.test_set(FIRST_SET['while']):
-        return parse_while(reader)
-
-    elif reader.test_set(FIRST_SET['declare']):
-        return parse_declare(reader)
-
-    elif reader.test_set(FIRST_SET['iden_start']):
-        return parse_identifier_start(reader)
-
-    elif reader.test_set(FIRST_SET['return']):
-        reader.match('return')
-
-        if reader.test_set(FIRST_SET['exp']):
-            exp = parse_exp(reader)
-        else:
-            exp = Literal('NONE')
-
-        reader.match(';')
-        return Return(exp)
-
-    elif reader.test_set(FIRST_SET['break']):
-        reader.match('break')
-        reader.match(';')
-        return Break()
-
-    elif reader.test_set(FIRST_SET['continue']):
-        reader.match('continue')
-        reader.match(';')
-        return Continue()
-
-    else:
-        raise ParserError(
-            f'Unexpected token {reader.peek()} encountered'
-            'while parsing statement'
-        )
+    raise NotImplementedError
 
 
 from .exp_parser import parse_exp
