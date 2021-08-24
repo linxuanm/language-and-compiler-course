@@ -4,6 +4,7 @@ from .semantics import analysis
 
 __all__ = [
     'NATIVE_FUNCS',
+    'NATIVE_INDEX',
     'Scope',
     'GlobalScope',
     'SemanticContext',

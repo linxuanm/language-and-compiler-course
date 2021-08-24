@@ -9,6 +9,13 @@ NATIVE_FUNCS = {
     'int_to_str': ['int']
 }
 
+NATIVE_INDEX = {
+    'print': 0,
+    'input': 1,
+    'str_to_int': 2,
+    'int_to_str': 3
+}
+
 
 class Scope:
     """

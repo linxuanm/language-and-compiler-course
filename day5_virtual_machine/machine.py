@@ -26,6 +26,24 @@ class Function:
     Represents a function in the code.
     """
 
-    def __init__(self, param_count: int, local_count: int):
+    def __init__(self, param_count: int, local_count: int, code: [[str]]):
         self.param_count = param_count
         self.local_count = local_count
+        self.code = code
+
+        self.pre_process()
+
+    def pre_process(self):
+        """
+        Pre-processes the code into a more manageable form (converting
+        params to int, etc).
+        """
+
+        pass
+
+    def execute_code(pc: int, machine: VirtualMachine):
+        """
+        Runs the code at the given program-counter index.
+        """
+
+        pass

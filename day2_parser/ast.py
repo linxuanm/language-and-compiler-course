@@ -7,7 +7,8 @@ from day3_semantic_analysis.semantic_context import (
     SemanticContext,
     Scope,
     GlobalScope,
-    NATIVE_FUNCS
+    NATIVE_FUNCS,
+    NATIVE_INDEX
 )
 from day4_code_generation import (
     UNOP_CODE,
@@ -680,7 +681,11 @@ class FuncCall(Exp):
         return sum(i.code_length() for i in self.params) + 1
 
     def generate_code(self, context: CodeGenContext) -> [str]:
-        end = f'call {self.name}'
+
+        if self.name in NATIVE_INDEX:
+            end = f'ncall {NATIVE_INDEX[self.name]}'
+        else:
+            end = f'call {self.name}'
 
         params_code = []
         for i in self.params:
