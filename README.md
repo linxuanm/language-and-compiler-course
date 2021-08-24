@@ -6,6 +6,23 @@ Due to the short length of this course, the main focus will be on understanding 
 
 Note that the sample answer, as well as some pre-written code, are not (even trivially) optimized. This is because this course is aimed to teach the ideas and concepts behind a compiler, and therefore explicitness and clarity is far superior than code efficiency.
 
+## Run Program
+
+To directly run a source code file:
+```sh
+python run.py run -s <source_code_file>
+```
+
+Alternatively, you can compile a source code file to bytecode first:
+```sh
+python run.py compile -s <source_code_file> [-o <output_file>]
+```
+
+and execute the bytecode file with:
+```sh
+python run.py exec -b <bytecode_file>
+```
+
 ## Homework
 
 The pieces you need to complete are located in:
