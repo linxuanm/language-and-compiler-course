@@ -1,0 +1,4 @@
+main() {
+    print("Hello");
+    print(input("How are you?\n"));
+}

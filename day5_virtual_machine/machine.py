@@ -13,7 +13,7 @@ def run_code(code: [str], io_handler: InteractionHandler = None):
     if io_handler is None:
             io_handler = NativeHandler()
 
-    file_rep = read_bytecode('output.byte')
+    file_rep = read_bytecode(code)
     funcs = {
         i['name']: Function(i['param_count'], i['local_count'], i['code'])
         for i in file_rep['funcs']
@@ -62,6 +62,15 @@ class Frame:
 
     def set_local(self, index: int, value):
         self.locals[index] = value
+
+    def get_code(self):
+        return self.func.get_code(self.pc)
+
+    def increment_pc(self):
+        self.pc += 1
+
+    def jump(self, index: int):
+        self.pc = index
 
 
 class VirtualMachine:
@@ -113,10 +122,66 @@ class VirtualMachine:
         Responsible for incrementing the program counter.
         """
 
-        pass
+        frame = self.get_curr_frame() # not efficient but meh
+        code = frame.get_code()
+        op = code[0]
+
+        single_param_funcs = {
+            'lload': self.lload,
+            'lstore': self.lstore,
+            'gload': self.gload,
+            'gstore': self.gstore,
+            'lint': self.exec_stack.append,
+            'lboo': self.exec_stack.append,
+            'lstr': self.exec_stack.append,
+            'ncall': self.call_native
+        }
+
+        increment = True
+        if op == 'ret':
+            increment = False
+            self.frame_stack.pop()
+
+        elif op in single_param_funcs:
+            single_param_funcs[op](code[1])
+
+
+        if increment:
+            frame.increment_pc()
 
     def lload(self, index: int):
         self.exec_stack.append(self.get_curr_frame().get_local(index))
 
     def lstore(self, index: int):
         self.get_curr_frame().set_local(index, self.exec_stack.pop())
+
+    def gload(self, index: int):
+        self.exec_stack.append(self.glob_vars[index])
+
+    def gstore(self, index: int):
+        self.glob_vars[index] = self.exec_stack.pop()
+
+    def call_native(self, index: int):
+        """
+        Calls a native function.
+        """
+
+        arg = self.exec_stack.pop()
+
+        if index == 0: # print
+            conv_table = {
+                True: 'TRUE',
+                False: 'FALSE',
+                None: 'NONE'
+            }
+
+            self.io.output(conv_table.get(arg, arg)) # int gets coerced yay
+
+        elif index == 1: # input
+            self.exec_stack.append(self.io.get_input(arg))
+
+        elif index == 2: # str_to_int
+            self.exec_stack.append(int(arg))
+
+        elif index == 3: # int_to_str
+            self.exec_stack.append(str(arg))

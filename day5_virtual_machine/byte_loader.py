@@ -3,6 +3,17 @@ import re
 from day1_lexer import InvalidByteSyntaxError
 
 
+def format_str(s: str) -> str:
+    """
+    Handles some escape chars in the string.
+    Also strips quotes.
+    """
+
+    return s[1 : -1].replace('\\n', '\n') \
+                    .replace('\\t', '\t') \
+                    .replace('\\r', '\r')
+
+
 SPLIT_REGEX = re.compile(r'(?:[^\s"]+|"[^"]*")+')
 
 INT_PARAM = {
@@ -16,22 +27,22 @@ INT_PARAM = {
     'ncall'
 }
 
-PREP_FUNCS = {'lboo': lambda b: b == 'TRUE'}
+PREP_FUNCS = {
+    'lboo': lambda b: ['lboo', b[1] == 'TRUE'],
+    'lstr': lambda s: ['lstr', format_str(s[1])]
+}
 
 for i in INT_PARAM:
     PREP_FUNCS[i] = lambda line: [line[0], int(line[1])]
 
 
-def read_bytecode(path: str) -> [[str]]:
+def read_bytecode(lines: [str]) -> [[str]]:
     """
-    Reads a bytecode file. The correctness of bytecode format is assumed;
+    Loads a bytecode from code. The correctness of bytecode format is assumed;
     nonetheless, throw an InvalidByteSyntaxError if you want.
     """
 
     out = {}
-
-    with open(path, 'r') as f:
-        lines = f.readlines()
 
     lines = [i.strip() for i in lines if i.strip()]
 
