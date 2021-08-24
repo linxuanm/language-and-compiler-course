@@ -38,30 +38,4 @@ def lex(raw_code: str) -> [(str, TokenType)]:
         ]
     """
 
-    if not raw_code:
-        return []
-
-    tokens = []
-    while raw_code:
-
-        for k, v in TOKEN_REGEX.items():
-
-            match = re.match(k, raw_code)
-            if match is not None:
-
-                content = match.group(0)
-                raw_code = raw_code[len(content) :]
-
-                if not v == TokenType.WHITESPACE:
-                    tokens.append((content, v))
-
-                break
-
-        else:
-            raise LexerError('No tokens found at ' + raw_code)
-
-    tokens = [
-        (i[0], TokenType.KEYWORD) if i[0] in KEYWORDS else i for i in tokens
-    ]
-
-    return tokens
+    raise NotImplementedError

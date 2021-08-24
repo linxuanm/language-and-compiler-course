@@ -90,27 +90,4 @@ class SemanticContext:
     up to you.
     """
 
-    def __init__(self):
-        self.scope = []
-
-    def find_closest(self, predicate) -> Scope:
-        """
-        Retrieves the most recent scope that satisfies the given condition.
-        """
-
-        for i in reversed(self.scope):
-            if predicate(i):
-                return i
-
-    def glob(self) -> GlobalScope:
-        """
-        Retrieves tne global scope.
-        """
-
-        return self.scope[0]
-
-    def push_scope(self, scope: Scope) -> None:
-        self.scope.append(scope)
-
-    def pop_scope(self) -> Scope:
-        return self.scope.pop()
+    pass

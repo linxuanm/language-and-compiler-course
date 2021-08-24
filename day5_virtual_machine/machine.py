@@ -95,13 +95,7 @@ class VirtualMachine:
         Executes the 'main' function.
         """
 
-        if not 'main' in self.funcs:
-            return
-
-        self.prep_func('main')
-
-        while self.frame_stack:
-            self.execute()
+        raise NotImplementedError
 
     def prep_func(self, func_name: str):
         """

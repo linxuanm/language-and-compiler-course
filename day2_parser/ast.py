@@ -98,15 +98,13 @@ class Declare(Stmt, Decl):
                compare_unordered(self.vars, other.vars)
 
     def analysis_pass(self, context: SemanticContext) -> None:
-        curr = context.find_closest(lambda _: True)
-        for i in self.vars:
-            curr.add_var(i)
+        raise NotImplementedError
 
     def code_length(self) -> int:
-        return 0 # declaration is purely compile-time
+        raise NotImplementedError
 
     def generate_code(self, context: CodeGenContext) -> [str]:
-        return []
+        raise NotImplementedError
 
     def var_count(self) -> int:
         return len(self.vars)
@@ -130,31 +128,13 @@ class Assign(Stmt):
                self.value == other.value
 
     def analysis_pass(self, context: SemanticContext) -> None:
-        scope = context.find_closest(lambda x, var=self.var: x.has_var(var))
-        if scope is None:
-            raise UndeclaredIdentifierError(
-                f'Variable {self.var} is not declared'
-            )
-
-        self.value.analysis_pass(context)
-        self.var_info = (
-            scope.var_index(self.var),
-            isinstance(scope, GlobalScope)
-        )
+        raise NotImplementedError
 
     def code_length(self) -> int:
-        return 1 + self.value.code_length()
+        raise NotImplementedError
 
     def generate_code(self, context: CodeGenContext) -> [str]:
-        value_code = self.value.generate_code(context)
-
-        context.increment()
-        if self.var_info[1]:
-            value_code.append(f'gstore {self.var_info[0]}')
-        else:
-            value_code.append(f'lstore {self.var_info[0]}')
-
-        return value_code
+        raise NotImplementedError
 
 
 class Return(Stmt):
@@ -173,16 +153,13 @@ class Return(Stmt):
                self.value == other.value
 
     def analysis_pass(self, context: SemanticContext) -> None:
-        self.value.analysis_pass(context)
+        raise NotImplementedError
 
     def code_length(self) -> int:
-        return 1 + self.value.code_length()
+        raise NotImplementedError
 
     def generate_code(self, context: CodeGenContext) -> [str]:
-        code = self.value.generate_code(context)
-
-        context.increment()
-        return code + ['ret']
+        raise NotImplementedError
 
 
 class Break(Stmt):
@@ -197,20 +174,13 @@ class Break(Stmt):
         return type(other) == Break
 
     def analysis_pass(self, context: SemanticContext) -> None:
-        scope = context.find_closest(lambda x: isinstance(x.node, While))
-
-        if scope is None:
-            raise MisplacedControlFlowError('Break outside of loop')
-
-        self.outer = scope.get_node()
+        raise NotImplementedError
 
     def code_length(self) -> int:
-        return 1 # just jump
+        raise NotImplementedError
 
     def generate_code(self, context: CodeGenContext) -> [str]:
-        context.increment()
-
-        return [f'jmp {self.loop.get_loop_end() + 1}']
+        raise NotImplementedError
 
 
 class Continue(Stmt):
@@ -221,20 +191,13 @@ class Continue(Stmt):
         return 'Continue'
 
     def analysis_pass(self, context: SemanticContext) -> None:
-        scope = context.find_closest(lambda x: isinstance(x.node, While))
-
-        if scope is None:
-            raise MisplacedControlFlowError('Continue outside of loop')
-
-        self.loop = scope
+        raise NotImplementedError
 
     def code_length(self) -> int:
-        return 1 # just jump
+        raise NotImplementedError
 
     def generate_code(self, context: CodeGenContext) -> [str]:
-        context.increment()
-
-        return [f'jmp {self.loop.get_loop_end()}']
+        raise NotImplementedError
 
 
 class If(Stmt):
@@ -262,61 +225,13 @@ class If(Stmt):
                self.else_code == other.else_code
 
     def analysis_pass(self, context: SemanticContext) -> None:
-        self.cond.analysis_pass(context)
-
-        if_scope = Scope(self)
-        context.push_scope(if_scope)
-
-        for i in self.if_code:
-            i.analysis_pass(context)
-
-        context.pop_scope()
-
-        else_scope = Scope(self)
-        context.push_scope(else_scope)
-
-        for i in self.else_code:
-            i.analysis_pass(context)
-
-        context.pop_scope()
+        raise NotImplementedError
 
     def code_length(self) -> int:
-        if_len = sum(i.code_length() for i in self.if_code)
-        else_len = sum(i.code_length() for i in self.else_code)
-        return self.cond.code_length() + if_len + else_len + 2 # 2 jumps
+        raise NotImplementedError
 
     def generate_code(self, context: CodeGenContext) -> [str]:
-
-        cond_code = self.cond.generate_code(context)
-
-        # initial 'if' branch jump
-        context.increment()
-
-        # code length
-        if_length = sum(i.code_length() for i in self.if_code)
-        else_length = sum(i.code_length() for i in self.else_code)
-
-        # start of 'if' branch
-        if_branch_start = context.get_counter() + else_length + 1 # extra 'jmp'
-        if_branch_end = if_branch_start + if_length
-
-        else_branch = sum(
-            [i.generate_code(context) for i in self.else_code],
-            []
-        )
-
-        # 'jmp' to end
-        context.increment()
-
-        if_branch = sum(
-            [i.generate_code(context) for i in self.if_code],
-            []
-        )
-
-        start_jmp = f'cjmp {if_branch_start}'
-        middle_jmp = f'jmp {if_branch_end}'
-
-        return [*cond_code, start_jmp, *else_branch, middle_jmp, *if_branch]
+        raise NotImplementedError
 
 
 class While(Stmt):
@@ -337,51 +252,13 @@ class While(Stmt):
                self.code == other.code
 
     def analysis_pass(self, context: SemanticContext) -> None:
-        self.cond.analysis_pass(context)
-
-        scope = Scope(self)
-        context.push_scope(scope)
-
-        for i in self.code:
-            i.analysis_pass(context)
-
-        context.pop_scope()
+        raise NotImplementedError
 
     def code_length(self) -> int:
-        return sum(i.code_length() for i in self.code) + \
-               self.cond.code_length() + 2
+        raise NotImplementedError
 
     def generate_code(self, context: CodeGenContext) -> [str]:
-
-        # for the jumping to conditional branch at bottom
-        context.increment()
-
-        # for the structure of a loop
-        self.start = context.get_counter()
-        inner_code_length = sum(i.code_length() for i in self.code)
-        self.end = self.start + inner_code_length # right before cond code
-
-        # generate code
-        code = sum([i.generate_code(context) for i in self.code], [])
-
-        # branching location
-        context.increment()
-
-        # condition
-        cond_code = self.cond.generate_code(context)
-
-        header = f'jmp {self.end}'
-        footer = f'cjmp {self.start}'
-
-        return [header, *code, *cond_code, footer]
-
-    # call-backed during code generation by 'continue' and 'break'
-    def get_loop_end(self) -> int:
-        """
-        Returns the instruction position before the looping 'cjmp'.
-        """
-
-        return self.end
+        raise NotImplementedError
 
 
 class FuncDecl(Decl):
@@ -413,36 +290,13 @@ class FuncDecl(Decl):
         context.glob().add_func(self.func_name, self)
 
     def analysis_pass(self, context: SemanticContext) -> None:
-
-        # add missing 'return'
-        if not self.code or not isinstance(self.code[-1], Return):
-            self.code.append(Return(Literal('NONE')))
-
-        scope = Scope(self)
-
-        for i in self.params:
-            scope.add_var(i)
-
-        context.push_scope(scope)
-        for i in self.code:
-            i.analysis_pass(context)
-
-        self.var_count = scope.var_count()
-        context.pop_scope()
+        raise NotImplementedError
 
     def code_length(self) -> int:
-        return sum(i.code_length() for i in self.code)
+        raise NotImplementedError
 
     def generate_code(self, context: CodeGenContext) -> [str]:
-
-        # header and footer do not count toward code length
-        header = f'{self.func_name} {len(self.params)} {self.var_count}'
-        footer = f':{self.func_name}'
-
-        body = sum([i.generate_code(context) for i in self.code], [])
-        body = [' ' * 4 + i for i in body]
-
-        return [header, *body, footer]
+        raise NotImplementedError
 
 
 class Program(AST):
@@ -462,43 +316,16 @@ class Program(AST):
                compare_unordered(self.var_decl, other.var_decl) and \
                compare_unordered(self.func_decl, other.func_decl)
 
-    def analysis_pass(self, context: SemanticContext):
-        global_scope = GlobalScope(self)
+    def analysis_pass(self, context: SemanticContext) -> None:
+        raise NotImplementedError
 
-        for name, params in NATIVE_FUNCS.items():
-            global_scope.add_func(name, FuncDecl(name, params, []))
+    def code_length(self) -> int:
 
-        context.push_scope(global_scope)
-
-        for i in self.var_decl:
-            i.analysis_pass(context)
-
-        for i in self.func_decl:
-            i.register(context)
-
-        for i in self.func_decl:
-            i.analysis_pass(context)
-
-        context.pop_scope()
+        # code length is unnecessary for 'Program' node
+        pass
 
     def generate_code(self, context: CodeGenContext) -> [str]:
-        code = [
-            str(sum(i.var_count() for i in self.var_decl)),
-            str(len(self.func_decl)),
-        ]
-
-        for i in self.func_decl:
-            func_context = CodeGenContext()
-
-            func_code = i.generate_code(func_context)
-
-            # -2 due to function header and footer
-            assert len(func_code) - 2 == func_context.get_counter()
-
-            code.append('')
-            code += func_code
-
-        return code
+        raise NotImplementedError
 
 
 class BinOp(Exp):
@@ -518,20 +345,14 @@ class BinOp(Exp):
         self.left = left
         self.right = right
 
-    def analysis_pass(self, context: SemanticContext):
-        # BinOp imposes no addition contextual contraint or information
-        self.left.analysis_pass(context)
-        self.right.analysis_pass(context)
+    def analysis_pass(self, context: SemanticContext) -> None:
+        raise NotImplementedError
 
-    def code_length(self):
-        return self.left.code_length() + self.right.code_length() + 1
+    def code_length(self) -> int:
+        raise NotImplementedError
 
     def generate_code(self, context: CodeGenContext) -> [str]:
-        left_code = self.left.generate_code(context)
-        right_code = self.right.generate_code(context)
-
-        context.increment()
-        return left_code + right_code + [BINOP_CODE[self.op]]
+        raise NotImplementedError
 
     def __str__(self):
         return f'{self.op}({self.left}, {self.right})'
@@ -553,17 +374,14 @@ class UnOp(Exp):
         self.op = op
         self.value = value
 
-    def analysis_pass(self, context: SemanticContext):
-        self.value.analysis_pass(context)
+    def analysis_pass(self, context: SemanticContext) -> None:
+        raise NotImplementedError
 
-    def code_length(self):
-        return self.value.code_length() + 1
+    def code_length(self) -> int:
+        raise NotImplementedError
 
     def generate_code(self, context: CodeGenContext) -> [str]:
-        code = self.value.generate_code(context)
-
-        context.increment()
-        return code + [UNOP_CODE[self.op]]
+        raise NotImplementedError
 
     def __str__(self):
         return f'{self.op}({self.value})'
@@ -590,24 +408,13 @@ class Literal(Exp):
                self.value == other.value
 
     def analysis_pass(self, context: SemanticContext) -> None:
-        pass
+        raise NotImplementedError
 
     def code_length(self) -> int:
-        return 1
+        raise NotImplementedError
 
     def generate_code(self, context: CodeGenContext) -> [str]:
-        context.increment()
-
-        if self.value == 'NONE':
-            return ['lnon']
-        elif self.value == 'TRUE':
-            return ['lboo 1']
-        elif self.value == 'FALSE':
-            return ['lboo 0']
-        elif self.value.isnumeric():
-            return [f'lint {self.value}']
-        else:
-            return [f'lstr {self.value}']
+        raise NotImplementedError
 
 
 class VarExp(Exp):
@@ -626,27 +433,13 @@ class VarExp(Exp):
                self.name == other.name
 
     def analysis_pass(self, context: SemanticContext) -> None:
-        scope = context.find_closest(lambda x, name=self.name: x.has_var(name))
-        if scope is None:
-            raise UndeclaredIdentifierError(
-                f'Variable {self.name} is not declared'
-            )
-
-        self.var_info = (
-            scope.var_index(self.name),
-            isinstance(scope, GlobalScope)
-        )
+        raise NotImplementedError
 
     def code_length(self) -> int:
-        return 1
+        raise NotImplementedError
 
     def generate_code(self, context: CodeGenContext) -> [str]:
-        context.increment()
-
-        if self.var_info[1]:
-            return [f'gload {self.var_info[0]}']
-        else:
-            return [f'lload {self.var_info[0]}']
+        raise NotImplementedError
 
 
 class FuncCall(Exp):
@@ -667,38 +460,13 @@ class FuncCall(Exp):
                self.params == other.params
 
     def analysis_pass(self, context: SemanticContext) -> None:
-        scope = context.glob()
-        if not scope.has_func(self.name):
-            raise UndeclaredIdentifierError(
-                f'Function {self.name} is not declared'
-            )
-
-        func = scope.get_func(self.name)
-        if len(func.params) != len(self.params):
-            raise InvalidParametersError(
-                f'Function {self.name} takes {len(func.params)} arguments, '
-                f'but was called with {len(self.params)} arguments'
-            )
-
-        for i in self.params:
-            i.analysis_pass(context)
+        raise NotImplementedError
 
     def code_length(self) -> int:
-        return sum(i.code_length() for i in self.params) + 1
+        raise NotImplementedError
 
     def generate_code(self, context: CodeGenContext) -> [str]:
-
-        if self.name in NATIVE_INDEX:
-            end = f'ncall {NATIVE_INDEX[self.name]}'
-        else:
-            end = f'call {self.name}'
-
-        params_code = []
-        for i in self.params:
-            params_code += i.generate_code(context)
-
-        context.increment()
-        return params_code + [end]
+        raise NotImplementedError
 
 
 class ExpStmt(Stmt):
@@ -717,15 +485,13 @@ class ExpStmt(Stmt):
                self.value == other.value
 
     def analysis_pass(self, context: SemanticContext) -> None:
-        self.value.analysis_pass(context)
+        raise NotImplementedError
 
     def code_length(self) -> int:
-        return self.value.code_length() + 1
+        raise NotImplementedError
 
     def generate_code(self, context: CodeGenContext) -> [str]:
-        code = self.value.generate_code(context) + ['pop']
-        context.increment()
-        return code
+        raise NotImplementedError
 
 
 def compare_unordered(a, b):
