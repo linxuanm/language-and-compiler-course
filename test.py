@@ -298,9 +298,12 @@ CODE_FILES = {
             ('{', TokenType.SYMBOL),
             ('length', TokenType.IDENTIFIER),
             ('=', TokenType.OPERATOR),
+            ('str_to_int', TokenType.IDENTIFIER),
+            ('(', TokenType.SYMBOL),
             ('input', TokenType.IDENTIFIER),
             ('(', TokenType.SYMBOL),
             ('"Enter length: "', TokenType.LITERAL),
+            (')', TokenType.SYMBOL),
             (')', TokenType.SYMBOL),
             (';', TokenType.SYMBOL),
             ('pyramid', TokenType.IDENTIFIER),
@@ -335,8 +338,6 @@ CODE_FILES = {
             ('print', TokenType.IDENTIFIER),
             ('(', TokenType.SYMBOL),
             ('out_str', TokenType.IDENTIFIER),
-            ('+', TokenType.OPERATOR),
-            ('"\\n"', TokenType.LITERAL),
             (')', TokenType.SYMBOL),
             (';', TokenType.SYMBOL),
             ('out_str', TokenType.IDENTIFIER),
@@ -359,8 +360,10 @@ CODE_FILES = {
         'ast': Program([
             Declare(['length', 'Counter']),
             FuncDecl('main', [], [
-                Assign('length', FuncCall('input', [
-                    Literal('"Enter length: "')
+                Assign('length', FuncCall('str_to_int', [
+                    FuncCall('input', [
+                        Literal('"Enter length: "')
+                    ])
                 ])),
                 ExpStmt(FuncCall('pyramid', [VarExp('length')]))
             ]),
@@ -370,7 +373,7 @@ CODE_FILES = {
                 Assign('out_str', Literal('"*"')),
                 While(BinOp('<=', VarExp('Counter'), VarExp('length')), [
                     ExpStmt(FuncCall('print', [
-                        BinOp('+', VarExp('out_str'), Literal('"\\n"'))
+                        VarExp('out_str')
                     ])),
                     Assign('out_str', BinOp('+',
                         VarExp('out_str'),

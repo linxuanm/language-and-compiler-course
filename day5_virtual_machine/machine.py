@@ -113,7 +113,7 @@ class VirtualMachine:
         self.frame_stack.append(curr_frame)
 
         # load params
-        params = func.get_local_count()
+        params = func.get_param_count()
         for i in range(params):
             self.lstore(params - i - 1) # reverse stack order
 
