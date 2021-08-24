@@ -412,6 +412,11 @@ class FuncDecl(Decl):
         context.glob().add_func(self.func_name, self)
 
     def analysis_pass(self, context: SemanticContext) -> None:
+
+        # add missing 'return'
+        if not self.code or not isinstance(self.code[-1], Return):
+            self.code.append(Return(Literal('NONE')))
+
         scope = Scope(self)
 
         for i in self.params:

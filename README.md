@@ -257,7 +257,7 @@ index n - 1 |     glob_var_n     |
 Each function call pushes a frame onto the frame stack. Each frame represents the context of the current function scope, and stores the following information:
 
 - Local variable value (in a variable table identical to the [Global Variable Table](#GlobalVariableTable))
-- Current instruction index
+- Current instruction index (by convention the return address is stored here, but for simplicity each frame stores its own program counter value)
 
 ### Bytecode File Format
 

@@ -36,15 +36,17 @@ def read_bytecode(path: str) -> [[str]]:
     lines = [i.strip() for i in lines if i.strip()]
 
     out['glob_var_count'] = int(lines[0])
-    out['func_count'] = int(lines[1])
+    func_count = int(lines[1])
 
     funcs = []
     curr = 2
-    for i in range(out['func_count']):
+    for i in range(func_count):
         func_decl = lines[curr]
         curr += 1
 
         name, param_count, local_count = func_decl.split()
+        param_count, local_count = int(param_count), int(local_count)
+
         code = []
         while not lines[curr].startswith(':'):
             code.append(re.findall(SPLIT_REGEX, lines[curr]))
