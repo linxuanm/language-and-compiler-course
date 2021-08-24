@@ -1,4 +1,5 @@
 main() {
+    print(1);
     func(str_to_int(input("Hello")));
 }
 

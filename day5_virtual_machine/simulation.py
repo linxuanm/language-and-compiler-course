@@ -24,9 +24,16 @@ class RecordingHandler(InteractionHandler):
     def __init__(self, inputs: [str]):
         self.inputs = inputs
         self.outputs = []
+        self.counter = 0
 
     def get_input(self, msg: str) -> str:
-        yield from self.inputs
+        if self.counter >= len(self.inputs):
+            raise RuntimeError('Reached end of input')
+
+        value = self.inputs[self.counter]
+        self.counter += 1
+
+        return value
 
     def output(self, text: str):
         self.outputs.append(text)

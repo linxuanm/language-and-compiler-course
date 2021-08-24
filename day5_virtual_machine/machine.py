@@ -220,13 +220,15 @@ class VirtualMachine:
         arg = self.exec_stack.pop()
 
         if index == 0: # print
-            conv_table = {
+            table = {
                 True: 'TRUE',
                 False: 'FALSE',
                 None: 'NONE'
             }
 
-            self.io.output(conv_table.get(arg, arg)) # int gets coerced yay
+            value = str(arg) if isinstance(arg, int) else table.get(arg, arg)
+
+            self.io.output(value)
             self.exec_stack.append(None)
 
         elif index == 1: # input

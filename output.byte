@@ -2,6 +2,9 @@
 2
 
 main 0 0
+    lint 1
+    ncall 0
+    pop
     lstr "Hello"
     ncall 1
     ncall 2
@@ -14,7 +17,7 @@ main 0 0
 func 1 2
     lload 0
     lstore 1
-    jmp 15
+    jmp 10
     lload 1
     ncall 0
     pop

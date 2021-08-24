@@ -475,6 +475,7 @@ CODE_FILES = {
     }
 
 }
+
 COMPILE_ERROR_FILES = {
     'error_parse_delimiter.code': lexer.ParserError,
     'error_parse_equal.code': lexer.ParserError,
@@ -497,6 +498,47 @@ COMPILE_ERROR_FILES = {
     'error_invalid_param_complex.code': lexer.InvalidParametersError,
     'error_invalid_param_native.code': lexer.InvalidParametersError
 }
+
+VM_TEST_DATA = [
+    {
+        'name': 'structures.code',
+        'input': [],
+        'output': ['20']
+    },
+    {
+        'name': 'fibonacci.code',
+        'input': [],
+        'output': [
+            '1', '2', '3', '5', '8', '13', '21', '34', '55', '89',
+            '144', '233', '377', '610', '987', '1597', 'DONE'
+        ]
+    },
+    {
+        'name': 'factorial.code',
+        'input': ['5'],
+        'output': ['120']
+    },
+    {
+        'name': 'factorial.code',
+        'input': ['10'],
+        'output': ['3628800']
+    },
+    {
+        'name': 'factorial.code',
+        'input': ['30'],
+        'output': ['265252859812191058636308480000000']
+    },
+    {
+        'name': 'pyramid.code',
+        'input': ['3'],
+        'output': ['*' * i for i in range(1, 4)]
+    },
+    {
+        'name': 'pyramid.code',
+        'input': ['10'],
+        'output': ['*' * i for i in range(1, 11)]
+    }
+]
 
 
 def get_file_values(all_files, key):
@@ -603,7 +645,7 @@ def test_analysis(asts):
         good(f'Test Passed: {i}')
 
 
-@wrap_title('Code Generation')
+@wrap_title('Code Generation (No Error)')
 def test_generation(asts):
     out_code = {}
 
@@ -614,6 +656,15 @@ def test_generation(asts):
         # for i in out_code[k]: print(i)
 
     return out_code
+
+
+@wrap_title('Code Validity and Virtual Machine')
+def test_vm(generated):
+    for i in VM_TEST_DATA:
+        code = generated[i['name']]
+        handler = machine.RecordingHandler(i['input'])
+        machine.run_code(code, handler)
+        assert_equal(handler.outputs, i['output'], i['name'])
 
 
 def full_compile(path):
@@ -634,5 +685,6 @@ asts = test_parser(CODE_FILES, tokens)
 test_analysis(asts)
 test_fail(COMPILE_ERROR_FILES)
 generated = test_generation(asts)
+test_vm(generated)
 
 good('ALL TEST PASSED')
