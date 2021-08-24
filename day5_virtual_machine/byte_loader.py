@@ -5,8 +5,24 @@ from day1_lexer import InvalidByteSyntaxError
 
 SPLIT_REGEX = re.compile(r'(?:[^\s"]+|"[^"]*")+')
 
+INT_PARAM = {
+    'gload',
+    'gstore',
+    'lload',
+    'lstore',
+    'lint',
+    'jmp',
+    'cjmp',
+    'ncall'
+}
 
-def read_bytecode(path: str):
+PREP_FUNCS = {'lboo': lambda b: b == 'TRUE'}
+
+for i in INT_PARAM:
+    PREP_FUNCS[i] = lambda line: [line[0], int(line[1])]
+
+
+def read_bytecode(path: str) -> [[str]]:
     """
     Reads a bytecode file. The correctness of bytecode format is assumed;
     nonetheless, throw an InvalidByteSyntaxError if you want.
@@ -40,9 +56,18 @@ def read_bytecode(path: str):
             'name': name,
             'param_count': param_count,
             'local_count': local_count,
-            'code': code
+            'code': preprocess(code)
         })
 
     out['funcs'] = funcs
 
     return out
+
+
+def preprocess(code: [[str]]):
+    """
+    Preprocesses code into a more manageable form (e.g. convert params
+    to int).
+    """
+
+    return [PREP_FUNCS[i[0]](i) if i[0] in PREP_FUNCS else i for i in code]
