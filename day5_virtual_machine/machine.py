@@ -139,6 +139,26 @@ class VirtualMachine:
             'ncall': self.call_native
         }
 
+        un_stack_funcs = {
+            'neg': lambda x: -x,
+            'not': lambda x: not x
+        }
+
+        bin_stack_funcs = {
+            'add': lambda a, b: b + a,
+            'subtract': lambda a, b: b - a,
+            'mul': lambda a, b: b * a,
+            'div': lambda a, b: b // a,
+            'and': lambda a, b: b and a,
+            'or': lambda a, b: b or a,
+            'equal': lambda a, b: b == a,
+            'nequal': lambda a, b: b != a,
+            'less': lambda a, b: b < a,
+            'great': lambda a, b: b > a,
+            'leq': lambda a, b: b <= a,
+            'geq': lambda a, b: b >= a
+        }
+
         increment = True
         if op == 'ret':
             increment = False
@@ -161,8 +181,21 @@ class VirtualMachine:
                 increment = False
                 frame.pc = code[1]
 
+        elif op in un_stack_funcs:
+            func = un_stack_funcs[op]
+            self.exec_stack.append(func(self.exec_stack.pop()))
+
         elif op in single_param_funcs:
             single_param_funcs[op](code[1])
+
+        elif op in bin_stack_funcs:
+            a = self.exec_stack.pop()
+            b = self.exec_stack.pop()
+
+            self.exec_stack.append(bin_stack_funcs[op](a, b))
+
+        else:
+            raise RuntimeError(f'Invalid instruction {op}')
 
         if increment:
             frame.increment_pc()
@@ -204,3 +237,6 @@ class VirtualMachine:
 
         elif index == 3: # int_to_str
             self.exec_stack.append(str(arg))
+
+        else:
+            raise RuntimeError(f'Invalid native function with index {index}')
