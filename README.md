@@ -32,7 +32,7 @@ The pieces you need to complete are located in:
 - (Day 3) `day2_parser/ast.py`: `analysis_pass` for all AST nodes
 - (Day 3) `day3_semantic_analysis/semantic_context.py`: define the `SemanticContext` class in a useful way that passes the tests
 - (Day 4) `day2_parser/ast.py`: `code_length` and `generate_code` for all AST nodes
-- (Day 5): `TODO`
+- (Day 5): `day5_virtual_machine/machine.py`: the `VirtualMachine.run` function
 
 ## Source Language
 

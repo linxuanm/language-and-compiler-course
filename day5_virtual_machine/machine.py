@@ -77,7 +77,7 @@ class VirtualMachine:
     """
     The virtual machine responsible for all code execution.
 
-    Implement it however you like.
+    Implement it however you like. Feel free to add new methods to this class.
     """
 
     def __init__(self, io: InteractionHandler, glob_var_count: int, funcs):
