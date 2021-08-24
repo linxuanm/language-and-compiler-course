@@ -133,7 +133,7 @@ class VirtualMachine:
             'gload': self.gload,
             'gstore': self.gstore,
             'lint': self.exec_stack.append,
-            'lboo': self.exec_stack.append,
+            'lboo': lambda x, s=self: s.exec_stack.append(bool(x)),
             'lstr': self.exec_stack.append,
             'call': self.prep_func,
             'ncall': self.call_native
@@ -149,6 +149,17 @@ class VirtualMachine:
 
         elif op == 'pop':
             self.exec_stack.pop()
+
+        elif op == 'jmp':
+            increment = False
+            frame.pc = code[1]
+
+        elif op == 'cjmp':
+            value = self.exec_stack.pop()
+
+            if value:
+                increment = False
+                frame.pc = code[1]
 
         elif op in single_param_funcs:
             single_param_funcs[op](code[1])

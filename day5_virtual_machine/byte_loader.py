@@ -22,13 +22,13 @@ INT_PARAM = {
     'lload',
     'lstore',
     'lint',
+    'lboo',
     'jmp',
     'cjmp',
     'ncall'
 }
 
 PREP_FUNCS = {
-    'lboo': lambda b: ['lboo', b[1] == 'TRUE'],
     'lstr': lambda s: ['lstr', format_str(s[1])]
 }
 

@@ -358,7 +358,8 @@ class While(Stmt):
 
         # for the structure of a loop
         self.start = context.get_counter()
-        self.end = self.start + self.code_length() - 1 # before 'cjmp'
+        inner_code_length = sum(i.code_length() for i in self.code)
+        self.end = self.start + inner_code_length # right before cond code
 
         # generate code
         code = sum([i.generate_code(context) for i in self.code], [])

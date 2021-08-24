@@ -1,5 +1,5 @@
 main() {
-    print("Hello");
-    print(input("How are you?\n"));
-    main();
+    while (1) {
+        print("Hi");
+    }
 }
