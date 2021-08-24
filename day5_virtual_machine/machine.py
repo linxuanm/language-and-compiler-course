@@ -52,7 +52,7 @@ class Frame:
     Represents a function frame.
     """
 
-    def __init__(self, func: int):
+    def __init__(self, func: Function):
         self.func = func
         self.locals = [None] * self.func.get_local_count()
         self.pc = 0
@@ -98,16 +98,17 @@ class VirtualMachine:
         if not 'main' in self.funcs:
             return
 
-        self.prep_func(self.funcs['main'])
+        self.prep_func('main')
 
         while self.frame_stack:
             self.execute()
 
-    def prep_func(self, func: Function):
+    def prep_func(self, func_name: str):
         """
         Prepares to run a function.
         """
 
+        func = self.funcs[func_name]
         curr_frame = Frame(func)
         self.frame_stack.append(curr_frame)
 
@@ -134,6 +135,7 @@ class VirtualMachine:
             'lint': self.exec_stack.append,
             'lboo': self.exec_stack.append,
             'lstr': self.exec_stack.append,
+            'call': self.prep_func,
             'ncall': self.call_native
         }
 
@@ -142,9 +144,14 @@ class VirtualMachine:
             increment = False
             self.frame_stack.pop()
 
+        elif op == 'lnon':
+            self.exec_stack.append(None)
+
+        elif op == 'pop':
+            self.exec_stack.pop()
+
         elif op in single_param_funcs:
             single_param_funcs[op](code[1])
-
 
         if increment:
             frame.increment_pc()
@@ -176,6 +183,7 @@ class VirtualMachine:
             }
 
             self.io.output(conv_table.get(arg, arg)) # int gets coerced yay
+            self.exec_stack.append(None)
 
         elif index == 1: # input
             self.exec_stack.append(self.io.get_input(arg))
